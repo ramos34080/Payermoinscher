@@ -51,7 +51,9 @@ header { display: flex; flex-direction: column; gap: 6px; }
 .cher svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 h1 { font-family: var(--font-display); font-weight: 800; font-size: 28px; margin: 0; letter-spacing: -0.01em; }
 .sub { color: var(--muted); margin: 0; max-width: 60ch; text-wrap: balance; }
-.demo { font-size: 12.5px; color: var(--warn); background: var(--warn-bg); border-radius: 8px; padding: 8px 10px; }
+.soon { margin: 0; font-size: 13.5px; color: var(--muted); border-left: 3px solid var(--accent); padding: 2px 0 2px 10px; }
+.specs { font-size: 13.5px; color: var(--muted); }
+.perk { font-family: var(--font-display); font-weight: 800; font-size: 20px; color: var(--best); }
 
 .search { position: relative; }
 .search input {
@@ -139,7 +141,7 @@ footer .links a:hover, footer .links a:focus-visible { color: var(--accent); tex
   <header>
     <div class="brand"><div class="tag" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 100 100" fill="none" stroke="#0e0d0f" stroke-linecap="round" stroke-linejoin="round"><path d="M64 30a24 24 0 1 0 0 40" stroke-width="10"/><path d="M24 44h32M24 56h28" stroke-width="8"/><path d="M80 30v32m-11-11 11 11 11-11" stroke-width="8"/></svg></div><h1>PayezMoins<span class="cher">Cher<svg viewBox="0 0 100 50" preserveAspectRatio="none" aria-hidden="true"><line x1="2" y1="29" x2="98" y2="29" stroke="#0e0d0f" stroke-width="4.5" stroke-linecap="round"/></svg></span></h1></div>
     <p class="sub">Le même produit sur 8 sites fiables, classé par ce qu'il vous coûte vraiment une fois vos cartes de fidélité comptées.</p>
-    <div class="demo">Maquette : les produits et les prix sont des exemples. Les avantages des cartes viennent des sites officiels des enseignes.</div>
+    <p class="soon">Les prix en direct arrivent bientôt. En attendant, voyez ce que chaque enseigne vous rapporte avec vos cartes, puis vérifiez le prix en un clic.</p>
   </header>
 
   <div id="home" class="wrap" style="gap:22px">
@@ -163,7 +165,7 @@ footer .links a:hover, footer .links a:focus-visible { color: var(--accent); tex
   <div id="detail" class="compare" hidden></div>
 
   <footer>
-    <p>Coût réel = prix + livraison − avantages de vos cartes. Les cartes payantes ont aussi une cotisation annuelle, indiquée sur chaque carte.</p>
+    <p>Coût réel = prix + livraison − avantages de vos cartes. Les cartes payantes ont aussi une cotisation annuelle, indiquée sur chaque carte. Les avantages des cartes et les garanties viennent des sites officiels des enseignes.</p>
     <p>PayezMoinsCher est gratuit pour vous. Quand vous achetez chez une enseigne via nos liens, celle-ci peut nous verser une commission, sans aucun surcoût pour vous. Cela ne change jamais le classement des offres.</p>
     <nav class="links" aria-label="Informations"><a href="a-propos.html">Qui sommes-nous</a><a href="contact.html">Contact</a><a href="mentions-legales.html">Mentions légales</a><a href="confidentialite.html">Confidentialité</a></nav>
   </footer>
@@ -217,29 +219,36 @@ const WARRANTY = {
 };
 
 const ENERGY = { A: "#00a651", B: "#50b848", C: "#bed630", D: "#fff200", E: "#fdb913", F: "#f37021", G: "#ed1c24" };
+// Vrais produits (références vérifiées chez les marques, octobre 2026). Pas de prix tant que les flux des enseignes ne sont pas branchés.
+const GROS = ["Darty", "Boulanger", "But", "Conforama", "Electro Dépôt", "Cdiscount"];
+const TECH = ["Fnac", "Darty", "Boulanger", "Amazon", "Cdiscount", "Electro Dépôt"];
 const PRODUCTS = [
-  { id: "ll", cat: "gros", catLabel: "Lave-linge", name: "Lave-linge Bosch Série 6, 9 kg", energy: "A", offers: [
-    ["Darty", 649, 0], ["Boulanger", 659, 0], ["But", 669, 29], ["Conforama", 679, 39], ["Electro Dépôt", 629, 49], ["Cdiscount", 639, 39] ] },
-  { id: "fr", cat: "gros", catLabel: "Réfrigérateur", name: "Réfrigérateur combiné Samsung 390 L", energy: "C", offers: [
-    ["Darty", 899, 0], ["Boulanger", 879, 0], ["But", 869, 39], ["Conforama", 889, 49], ["Amazon", 859, 0], ["Cdiscount", 849, 49] ] },
-  { id: "tv", cat: "tv", catLabel: "Téléviseur", name: "TV LG OLED 55 pouces", energy: "F", offers: [
-    ["Fnac", 1199, 0], ["Darty", 1199, 0], ["Boulanger", 1179, 0], ["Amazon", 1149, 0], ["Cdiscount", 1159, 19], ["Electro Dépôt", 1169, 29] ] },
-  { id: "asp", cat: "petit", catLabel: "Aspirateur", name: "Aspirateur balai Dyson V15", energy: null, offers: [
-    ["Fnac", 599, 0], ["Darty", 599, 0], ["Boulanger", 589, 0], ["Amazon", 579, 0], ["But", 609, 19], ["Cdiscount", 585, 9.99] ] },
-  { id: "lv", cat: "gros", catLabel: "Lave-vaisselle", name: "Lave-vaisselle Beko 14 couverts", energy: "B", offers: [
-    ["Conforama", 449, 39], ["But", 459, 29], ["Boulanger", 469, 0], ["Darty", 479, 0], ["Electro Dépôt", 429, 49] ] },
-  { id: "mo", cat: "petit", catLabel: "Micro-ondes", name: "Micro-ondes Samsung 23 L", energy: null, offers: [
-    ["Conforama", 119, 19], ["But", 115, 19], ["Boulanger", 129, 0], ["Darty", 129, 0], ["Amazon", 109, 0], ["Electro Dépôt", 99, 19] ] },
+  { id: "ll", cat: "gros", catLabel: "Lave-linge", name: "Lave-linge Bosch Série 6 WGG244Z3FR", specs: "9 kg · 1400 tours/min", energy: "A", ref: "WGG244Z3FR", sites: GROS },
+  { id: "fr", cat: "gros", catLabel: "Réfrigérateur", name: "Réfrigérateur combiné Samsung RB38C7B6DS9", specs: "390 L · inox", energy: "D", ref: "RB38C7B6DS9", sites: GROS },
+  { id: "lv", cat: "gros", catLabel: "Lave-vaisselle", name: "Lave-vaisselle Bosch Série 4 SMS4HUI09F", specs: "13 couverts · pose libre, 60 cm", energy: "D", ref: "SMS4HUI09F", sites: GROS },
+  { id: "tv", cat: "tv", catLabel: "Téléviseur", name: "TV LG OLED evo 55C5 (2025)", specs: "55 pouces (139 cm) · 4K", energy: null, ref: "OLED55C5", sites: TECH },
+  { id: "asp", cat: "petit", catLabel: "Aspirateur", name: "Aspirateur balai Dyson V15 Detect Absolute", specs: "Sans fil", energy: null, ref: "Dyson V15 Detect Absolute", sites: TECH },
+  { id: "mo", cat: "petit", catLabel: "Micro-ondes", name: "Micro-ondes Samsung MS23K3513AS", specs: "23 L · 800 W", energy: null, ref: "MS23K3513AS", sites: ["Darty", "Boulanger", "But", "Conforama", "Amazon", "Cdiscount"] },
+  { id: "af", cat: "petit", catLabel: "Friteuse sans huile", name: "Ninja Foodi MAX Dual Zone AF400EU", specs: "9,5 L · 2 paniers", energy: null, ref: "Ninja AF400EU", sites: TECH },
+  { id: "ps5", cat: "tech", catLabel: "Console", name: "PlayStation 5 Slim, édition standard", specs: "Avec lecteur de disque", energy: null, ref: "PS5 Slim standard", sites: ["Fnac", "Darty", "Boulanger", "Amazon", "Cdiscount", "Conforama"] },
 ];
-
-const eur = n => n.toLocaleString("fr-FR", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }) + " €";
+const SEARCH = {
+  Darty: q => "https://www.darty.com/nav/recherche?text=" + encodeURIComponent(q),
+  Boulanger: q => "https://www.boulanger.com/resultats?tr=" + encodeURIComponent(q),
+  Fnac: q => "https://www.fnac.com/SearchResult/ResultList.aspx?Search=" + encodeURIComponent(q),
+  Cdiscount: q => "https://www.cdiscount.com/search/10/" + encodeURIComponent(q.toLowerCase()) + ".html",
+  Conforama: q => "https://www.conforama.fr/recherche-conforama/" + encodeURIComponent(q),
+  Amazon: q => "https://www.amazon.fr/s?k=" + encodeURIComponent(q),
+  "Electro Dépôt": q => "https://www.electrodepot.fr/catalogsearch/result/?q=" + encodeURIComponent(q),
+};
+const linkFor = (site, p) => SEARCH[site] ? SEARCH[site](p.ref) : LINKS[site];
 
 let owned = new Set(["confo"]);
 try { const s = JSON.parse(localStorage.getItem("oa-cards") || "null"); if (Array.isArray(s)) owned = new Set(s); } catch (e) {}
 const save = () => { try { localStorage.setItem("oa-cards", JSON.stringify([...owned])); } catch (e) {} };
+const pct = r => (Math.round(r * 1000) / 10).toLocaleString("fr-FR") + " %";
 
 function perksFor(site, product, cardSet) {
-  // returns {delivery multiplier, discounts[], credit, freeShipBy}
   const out = { discounts: [], freeShipBy: null, credit: false };
   for (const [key, c] of Object.entries(CARDS)) {
     if (!cardSet.has(key)) continue;
@@ -250,16 +259,14 @@ function perksFor(site, product, cardSet) {
     }
     if (c.also && c.also.site === site && c.also.cat === product.cat) out.discounts.push({ label: c.also.label, rate: c.also.rate });
   }
+  out.rate = out.discounts.reduce((a, d) => a + d.rate, 0);
+  out.freeShip = !!(SITE_DELIVERY_FREE[site] || out.freeShipBy);
   return out;
 }
-function compute(site, price, delivery, product, cardSet) {
-  const p = perksFor(site, product, cardSet);
-  const ship = SITE_DELIVERY_FREE[site] || p.freeShipBy ? 0 : delivery;
-  const disc = p.discounts.map(d => ({ label: d.label, amount: Math.round(price * d.rate * 100) / 100 }));
-  const real = price + ship - disc.reduce((a, d) => a + d.amount, 0);
-  return { site, price, delivery, ship, freeShipBy: p.freeShipBy, disc, real, credit: p.credit };
-}
+// Classement sans prix : d'abord le pourcentage rendu par vos cartes, puis la livraison offerte.
+const score = x => x.rate * 100 + (x.freeShip ? 0.5 : 0);
 function cardsOf(site) { return Object.entries(CARDS).filter(([, c]) => c.site === site || (c.also && c.also.site === site)); }
+function ranked(p, cardSet) { return p.sites.map(site => ({ site, ...perksFor(site, p, cardSet) })).sort((a, b) => score(b) - score(a)); }
 
 function renderCards() {
   const el = document.getElementById("cards");
@@ -274,20 +281,24 @@ function renderCards() {
     el.appendChild(b);
   }
 }
-function best(product) { return product.offers.map(([s, p, d]) => compute(s, p, d, product, owned)).sort((a, b) => a.real - b.real)[0]; }
 function energyTag(e) { return e ? `<span class="energy" style="background:${ENERGY[e]};${"DE".includes(e) ? "color:#1a1a1a" : ""}">${e}</span>` : ""; }
+function topLine(p) {
+  const t = ranked(p, owned)[0];
+  if (t.rate) return `Jusqu'à <b>${pct(t.rate)}</b> rendus chez ${t.site}`;
+  if (t.freeShip) return `Livraison offerte chez ${t.site}`;
+  return `${p.sites.length} enseignes à comparer`;
+}
 
 function renderShelf() {
   const q = document.getElementById("q").value.trim().toLowerCase();
-  const list = PRODUCTS.filter(p => !q || (p.name + " " + p.catLabel).toLowerCase().includes(q));
+  const list = PRODUCTS.filter(p => !q || (p.name + " " + p.catLabel + " " + p.specs).toLowerCase().includes(q));
   const el = document.getElementById("shelf");
   document.getElementById("shelfTitle").textContent = q ? `${list.length} résultat${list.length > 1 ? "s" : ""}` : "Produits";
-  el.innerHTML = list.length ? "" : `<p class="empty">Aucun produit pour « ${q.replace(/[<>&]/g, "")} » dans cette maquette. Essayez « lave », « TV » ou « Dyson ».</p>`;
+  el.innerHTML = list.length ? "" : `<p class="empty">Aucun produit pour « ${q.replace(/[<>&]/g, "")} » pour l'instant. Essayez « lave », « TV » ou « Dyson ».</p>`;
   for (const p of list) {
-    const b = best(p);
     const btn = document.createElement("button");
     btn.className = "product"; btn.type = "button"; btn.id = "prod-" + p.id;
-    btn.innerHTML = `<span class="cat">${p.catLabel} ${energyTag(p.energy)}</span><span class="name">${p.name}</span><span class="from">Coût réel dès <b>${eur(b.real)}</b> chez ${b.site}</span>`;
+    btn.innerHTML = `<span class="cat">${p.catLabel} ${energyTag(p.energy)}</span><span class="name">${p.name}</span><span class="specs">${p.specs}</span><span class="from">${topLine(p)}</span>`;
     btn.onclick = () => { current = p; renderDetail(p); };
     el.appendChild(btn);
   }
@@ -297,28 +308,29 @@ let current = null;
 function renderDetail(p) {
   document.getElementById("home").hidden = true;
   const d = document.getElementById("detail"); d.hidden = false;
-  const rows = p.offers.map(([s, pr, dl]) => compute(s, pr, dl, p, owned)).sort((a, b) => a.real - b.real);
-  const cheapestShown = [...rows].sort((a, b) => a.price - b.price)[0];
+  const rows = ranked(p, owned);
   const top = rows[0];
-  let summary = `Le meilleur coût réel est chez <b>${top.site}</b> : ${eur(top.real)}.`;
-  if (cheapestShown.site !== top.site) summary += ` Le prix affiché le plus bas est chez ${cheapestShown.site} (${eur(cheapestShown.price)}), mais il revient à ${eur(cheapestShown.real)} pour vous.`;
+  const summary = top.rate || top.freeShip
+    ? `Avec vos cartes, c'est chez <b>${top.site}</b> que vous récupérez le plus${top.rate ? ` : <b>${pct(top.rate)}</b> du prix` : ""}${top.freeShip ? (top.rate ? ", et la livraison est offerte" : " : la livraison est offerte") : ""}. Vérifiez le prix sur chaque site avant d'acheter.`
+    : `Aucune de vos cartes ne donne d'avantage sur ce produit. Cochez vos cartes pour voir où vous gagnez le plus.`;
 
   d.innerHTML = `
     <button class="back" type="button" id="back">← Tous les produits</button>
-    <div class="ptitle"><span class="label">${p.catLabel} ${energyTag(p.energy)}</span><h2>${p.name}</h2></div>
+    <div class="ptitle"><span class="label">${p.catLabel} ${energyTag(p.energy)}</span><h2>${p.name}</h2><span class="specs">${p.specs}</span></div>
     <div class="summary">${summary}</div>
     <p class="legal">Partout, un appareil neuf a <b>2 ans de garantie légale</b>, due par le vendeur : réparation, échange ou remboursement, et 12 mois de plus après une réparation. <a href="${LEGAL}" target="_blank" rel="noopener">Service-public.fr ↗</a></p>
     ${rows.map((r, i) => {
-      const lines = [`<div class="line"><span>Prix affiché</span><span>${eur(r.price)}</span></div>`];
-      lines.push(`<div class="line"><span>Livraison${r.freeShipBy ? " (offerte avec " + r.freeShipBy + ")" : SITE_DELIVERY_FREE[r.site] && r.delivery ? " (offerte)" : ""}</span><span>${r.ship ? "+ " + eur(r.ship) : "0 €"}</span></div>`);
-      r.disc.forEach(x => lines.push(`<div class="line minus"><span>${x.label}</span><span>− ${eur(x.amount)}</span></div>`));
-      // what the user would pay with cards of this site they don't own
+      const lines = [`<div class="line"><span>Prix</span><span>à vérifier sur le site</span></div>`];
+      lines.push(`<div class="line"><span>Livraison</span><span>${r.freeShipBy ? "offerte avec " + r.freeShipBy : SITE_DELIVERY_FREE[r.site] ? "offerte" : "selon le site"}</span></div>`);
+      r.discounts.forEach(x => lines.push(`<div class="line minus"><span>${x.label}</span><span>− ${pct(x.rate)}</span></div>`));
       const missing = cardsOf(r.site).filter(([k]) => !owned.has(k));
       let hint = "";
       if (missing.length) {
-        const withAll = new Set([...owned, ...missing.map(([k]) => k)]);
-        const alt = compute(r.site, r.price, r.delivery, p, withAll);
-        if (alt.real < r.real - 0.005) hint = `<div class="hint">Avec ${missing.map(([, c]) => c.name).join(" et ")} (${missing.map(([, c]) => c.fee).join(", ")}), vous paieriez ${eur(alt.real)}.</div>`;
+        const alt = perksFor(r.site, p, new Set([...owned, ...missing.map(([k]) => k)]));
+        const gains = [];
+        if (alt.rate > r.rate) gains.push(`${pct(alt.rate)} rendus`);
+        if (alt.freeShip && !r.freeShip) gains.push("la livraison offerte");
+        if (gains.length) hint = `<div class="hint">Avec ${missing.map(([, c]) => c.name).join(" et ")} (${missing.map(([, c]) => c.fee).join(", ")}), vous auriez ${gains.join(" et ")}.</div>`;
       }
       const w = WARRANTY[r.site];
       const wMax = w.maxNote && owned.has("dmax") ? `<p class="w-max">${w.maxNote}</p>` : "";
@@ -333,11 +345,12 @@ function renderDetail(p) {
         </div>
       </details>`;
       const credit = r.credit ? `<div class="credit">La carte de ce magasin est une carte de crédit renouvelable. Un crédit vous engage et doit être remboursé.</div>` : "";
-      return `<article class="offer${i === 0 ? " best" : ""}">
-        <div class="site">${r.site}${i === 0 ? '<span class="badge">Meilleur coût réel</span>' : ""}</div>
-        <div class="real"><div class="v">${eur(r.real)}</div><div class="k">coût réel</div></div>
+      const best = i === 0 && (r.rate || r.freeShip);
+      return `<article class="offer${best ? " best" : ""}">
+        <div class="site">${r.site}${best ? '<span class="badge">Le plus avantageux pour vous</span>' : ""}</div>
+        <div class="real"><div class="perk">${r.rate ? "−" + pct(r.rate) : r.freeShip ? "Livr. offerte" : "—"}</div><div class="k">avec vos cartes</div></div>
         <div class="lines">${lines.join("")}</div>${hint}${credit}${warranty}
-        <a class="go" href="${LINKS[r.site]}" target="_blank" rel="noopener">Voir sur ${r.site} ↗</a>
+        <a class="go" href="${linkFor(r.site, p)}" target="_blank" rel="noopener">Voir le prix sur ${r.site} ↗</a>
       </article>`;
     }).join("")}`;
   document.getElementById("back").onclick = () => { current = null; d.hidden = true; document.getElementById("home").hidden = false; };
