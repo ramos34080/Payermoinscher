@@ -14,7 +14,7 @@
 <style>
 /* Layout: one mobile-first column; search on top, product shelf, then a ranked receipt-like comparison per product. */
 :root {
-  /* Charte PayezMoinsCher : noir + vert néon, touche rose (logo « Cher » barré d'une vague) */
+  /* Charte PayezMoinsCher : noir + vert néon, touche rose (logo « Cher » dans une pastille verte, barré en noir) */
   --bg: #0e0d0f;
   --surface: #18171b;
   --ink: #f4f4f4;
@@ -49,7 +49,7 @@ header { display: flex; flex-direction: column; gap: 6px; }
   background: linear-gradient(145deg, var(--accent), var(--accent-2));
   display: grid; place-items: center; box-shadow: 0 0 22px -6px rgba(198,255,61,.55);
 }
-.cher { color: var(--accent); position: relative; display: inline-block; }
+.cher { background: var(--accent); color: var(--accent-ink); position: relative; display: inline-block; padding: 0 3px; margin-left: 2px; border-radius: 6px; line-height: 1.05; }
 .cher svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 h1 { font-family: var(--font-display); font-weight: 800; font-size: 28px; margin: 0; letter-spacing: -0.01em; }
 .sub { color: var(--muted); margin: 0; max-width: 60ch; text-wrap: balance; }
@@ -135,7 +135,7 @@ footer { font-size: 12.5px; color: var(--muted); }
 
 <div class="wrap">
   <header>
-    <div class="brand"><div class="tag" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 100 100" fill="none" stroke="#0e0d0f" stroke-linecap="round" stroke-linejoin="round"><path d="M64 30a24 24 0 1 0 0 40" stroke-width="10"/><path d="M24 44h32M24 56h28" stroke-width="8"/><path d="M80 30v32m-11-11 11 11 11-11" stroke-width="8"/></svg></div><h1>PayezMoins<span class="cher">Cher<svg viewBox="0 0 100 50" preserveAspectRatio="none" aria-hidden="true"><path d="M0 28 q5 -7 10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0" fill="none" stroke="#ff4fa3" stroke-width="4" stroke-linecap="round"/></svg></span></h1></div>
+    <div class="brand"><div class="tag" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 100 100" fill="none" stroke="#0e0d0f" stroke-linecap="round" stroke-linejoin="round"><path d="M64 30a24 24 0 1 0 0 40" stroke-width="10"/><path d="M24 44h32M24 56h28" stroke-width="8"/><path d="M80 30v32m-11-11 11 11 11-11" stroke-width="8"/></svg></div><h1>PayezMoins<span class="cher">Cher<svg viewBox="0 0 100 50" preserveAspectRatio="none" aria-hidden="true"><line x1="2" y1="29" x2="98" y2="29" stroke="#0e0d0f" stroke-width="4.5" stroke-linecap="round"/></svg></span></h1></div>
     <p class="sub">Le même produit sur 8 sites fiables, classé par ce qu'il vous coûte vraiment une fois vos cartes de fidélité comptées.</p>
     <div class="demo">Maquette : les produits et les prix sont des exemples. Les avantages des cartes viennent des sites officiels des enseignes.</div>
   </header>
