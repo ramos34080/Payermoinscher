@@ -133,33 +133,149 @@ footer p { margin: 0 0 8px; }
 footer .links { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 14px; }
 footer .links a { color: var(--ink); text-decoration: none; }
 footer .links a:hover, footer .links a:focus-visible { color: var(--accent); text-decoration: underline; }
+
+/* Page d'accueil */
+.wrap { max-width: 1080px; gap: 0; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-bottom: 8px; }
+.top .brand { text-decoration: none; color: var(--ink); }
+.logo { font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: -0.01em; }
+.navlinks { display: flex; gap: 18px; font-size: 14px; font-weight: 600; }
+.navlinks a { color: var(--muted); text-decoration: none; }
+.navlinks a:hover, .navlinks a:focus-visible { color: var(--accent); }
+#home { display: flex; flex-direction: column; }
+.hero { display: grid; gap: 28px; align-items: center; padding: 40px 0 48px; }
+@media (min-width: 860px) { .hero { grid-template-columns: 1.25fr 1fr; padding: 72px 0 80px; gap: 56px; } }
+.hero-text { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.kicker { align-self: flex-start; font-size: 12.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); border: 1px solid #3a4a14; background: #151c0a; border-radius: 999px; padding: 5px 12px; }
+.hero h1 { font-size: clamp(36px, 7vw, 60px); line-height: 1.04; letter-spacing: -0.03em; text-wrap: balance; }
+.hl { color: var(--accent-ink); background: linear-gradient(145deg, var(--accent), var(--accent-2)); border-radius: 10px; padding: 0 .14em; }
+.hero .sub { font-size: 17px; line-height: 1.55; }
+.stats { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 22px; color: var(--muted); font-size: 14px; }
+.stats b { color: var(--ink); font-family: var(--font-display); font-size: 17px; margin-right: 4px; }
+.receipt { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px; display: flex; flex-direction: column; gap: 10px;
+  box-shadow: 0 30px 80px -40px rgba(198,255,61,.35); transform: rotate(-1.5deg); }
+.receipt figcaption { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+.r-row, .r-total { display: flex; justify-content: space-between; gap: 12px; font-variant-numeric: tabular-nums; }
+.r-row { font-size: 15px; padding-bottom: 8px; border-bottom: 1px dashed var(--line); }
+.r-row.minus span:last-child { color: var(--best); font-weight: 700; }
+.r-total { font-family: var(--font-display); font-weight: 800; font-size: 28px; padding-top: 4px; }
+.r-total span:last-child { color: var(--accent); }
+.r-note { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+.block { padding: 48px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 18px; }
+.title { font-family: var(--font-display); font-weight: 800; font-size: clamp(24px, 4vw, 32px); letter-spacing: -0.02em; margin: 0; }
+.lead { color: var(--muted); margin: 0; max-width: 62ch; font-size: 16px; line-height: 1.55; }
+.h3 { font-family: var(--font-display); font-weight: 600; font-size: 18px; margin: 0; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+.steps li { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+.steps h3 { font-family: var(--font-display); font-size: 18px; margin: 12px 0 6px; }
+.steps p { margin: 0; color: var(--muted); }
+.num { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--accent); color: var(--accent-ink); font-family: var(--font-display); font-weight: 800; }
+.shops { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.shops li { font-family: var(--font-display); font-weight: 700; font-size: 16px; padding: 10px 16px; border-radius: 12px; background: var(--chip); border: 1px solid var(--line); }
+#comparer .section { gap: 10px; }
+.why { display: grid; gap: 24px; }
+@media (min-width: 860px) { .why { grid-template-columns: 1fr 1fr; align-items: start; } }
+.pillars { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.pillars li { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+.pillars span { color: var(--muted); font-size: 14px; }
+.faq { display: flex; flex-direction: column; gap: 8px; max-width: 760px; }
+.faq details { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.faq summary { cursor: pointer; font-weight: 700; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; color: var(--accent); font-weight: 800; }
+.faq details[open] summary::after { content: "−"; }
+.faq p { margin: 10px 0 0; color: var(--muted); }
+.faq summary:focus-visible, .navlinks a:focus-visible, .top .brand:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+#detail { max-width: 720px; width: 100%; margin: 24px auto 0; }
+footer { border-top: 1px solid var(--line); padding-top: 24px; margin-top: 8px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 </style>
 </head>
 <body>
 
 <div class="wrap">
-  <header>
-    <div class="brand"><div class="tag" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 100 100" fill="none" stroke="#0e0d0f" stroke-linecap="round" stroke-linejoin="round"><path d="M64 30a24 24 0 1 0 0 40" stroke-width="10"/><path d="M24 44h32M24 56h28" stroke-width="8"/><path d="M80 30v32m-11-11 11 11 11-11" stroke-width="8"/></svg></div><h1>PayezMoins<span class="cher">Cher<svg viewBox="0 0 100 50" preserveAspectRatio="none" aria-hidden="true"><line x1="2" y1="29" x2="98" y2="29" stroke="#0e0d0f" stroke-width="4.5" stroke-linecap="round"/></svg></span></h1></div>
-    <p class="sub">Le même produit sur 8 sites fiables, classé par ce qu'il vous coûte vraiment une fois vos cartes de fidélité comptées.</p>
-    <p class="soon">Les prix en direct arrivent bientôt. En attendant, voyez ce que chaque enseigne vous rapporte avec vos cartes, puis vérifiez le prix en un clic.</p>
-  </header>
+  <nav class="top" aria-label="Menu">
+    <a class="brand" href="./" aria-label="PayezMoinsCher, accueil"><div class="tag" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 100 100" fill="none" stroke="#0e0d0f" stroke-linecap="round" stroke-linejoin="round"><path d="M64 30a24 24 0 1 0 0 40" stroke-width="10"/><path d="M24 44h32M24 56h28" stroke-width="8"/><path d="M80 30v32m-11-11 11 11 11-11" stroke-width="8"/></svg></div><span class="logo">PayezMoins<span class="cher">Cher<svg viewBox="0 0 100 50" preserveAspectRatio="none" aria-hidden="true"><line x1="2" y1="29" x2="98" y2="29" stroke="#0e0d0f" stroke-width="4.5" stroke-linecap="round"/></svg></span></span></a>
+    <div class="navlinks"><a href="#comment">Comment ça marche</a><a href="#comparer">Produits</a><a href="#faq">FAQ</a></div>
+  </nav>
 
-  <div id="home" class="wrap" style="gap:22px">
-    <label class="search" for="q">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder="Lave-linge, télé, aspirateur…" autocomplete="off" aria-label="Chercher un produit">
-    </label>
+  <div id="home">
+    <section class="hero">
+      <div class="hero-text">
+        <span class="kicker">Comparateur électroménager &amp; high-tech</span>
+        <h1>Le même produit.<br>Le <span class="hl">vrai</span> meilleur prix.</h1>
+        <p class="sub">Le prix affiché ne dit pas tout. PayezMoinsCher compte la livraison, vos cartes de fidélité et la garantie pour vous montrer où votre achat vous coûte vraiment le moins.</p>
+        <label class="search" for="q">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="q" type="search" placeholder="Lave-linge, télé, aspirateur…" autocomplete="off" aria-label="Chercher un produit">
+        </label>
+        <ul class="stats" aria-label="En bref">
+          <li><b>8</b> enseignes fiables</li>
+          <li><b>7</b> cartes de fidélité comptées</li>
+          <li><b>100 %</b> gratuit</li>
+        </ul>
+      </div>
+      <figure class="receipt" aria-label="Exemple de calcul du coût réel">
+        <figcaption>Exemple pour un achat affiché à 500 €</figcaption>
+        <div class="r-row"><span>Prix affiché</span><span>500 €</span></div>
+        <div class="r-row"><span>Livraison</span><span>offerte</span></div>
+        <div class="r-row minus"><span>Carte de fidélité 5 %</span><span>− 25 €</span></div>
+        <div class="r-total"><span>Coût réel</span><span>475 €</span></div>
+        <p class="r-note">Ailleurs, le même produit affiché 490 € avec 29 € de livraison revient à 519 €.</p>
+      </figure>
+    </section>
 
-    <div class="section">
-      <h2>Mes cartes</h2>
-      <span class="label">Cochez celles que vous avez déjà</span>
-      <div class="cards" id="cards"></div>
-    </div>
+    <section id="comment" class="block">
+      <h2 class="title">Comment ça marche</h2>
+      <ol class="steps">
+        <li><span class="num">1</span><h3>Cherchez un produit</h3><p>Lave-linge, télé, aspirateur, console… le même modèle, sur toutes les enseignes.</p></li>
+        <li><span class="num">2</span><h3>Cochez vos cartes</h3><p>Confo+, Fnac+, carte b+, Darty Max… on compte ce qu'elles vous font vraiment gagner.</p></li>
+        <li><span class="num">3</span><h3>Achetez au bon endroit</h3><p>On classe les enseignes par coût réel. Un clic et vous êtes sur le site du vendeur.</p></li>
+      </ol>
+    </section>
 
-    <div class="section">
-      <h2 id="shelfTitle">Produits</h2>
-      <div class="shelf" id="shelf"></div>
-    </div>
+    <section class="block">
+      <h2 class="title">Les enseignes comparées</h2>
+      <p class="lead">Uniquement des sites français connus et fiables.</p>
+      <ul class="shops"><li>Darty</li><li>Fnac</li><li>Boulanger</li><li>Conforama</li><li>But</li><li>Cdiscount</li><li>Amazon</li><li>Electro Dépôt</li></ul>
+    </section>
+
+    <section id="comparer" class="block">
+      <h2 class="title">Comparez maintenant</h2>
+      <p class="soon">Les prix en direct arrivent bientôt. En attendant, voyez ce que chaque enseigne vous rapporte avec vos cartes, puis vérifiez le prix en un clic.</p>
+      <div class="section">
+        <h3 class="h3">Mes cartes</h3>
+        <span class="label">Cochez celles que vous avez déjà</span>
+        <div class="cards" id="cards"></div>
+      </div>
+      <div class="section">
+        <h3 class="h3" id="shelfTitle">Produits</h3>
+        <div class="shelf" id="shelf"></div>
+      </div>
+    </section>
+
+    <section class="block why">
+      <div>
+        <h2 class="title">Pourquoi le « coût réel » ?</h2>
+        <p class="lead">Le moins cher affiché n'est pas toujours le moins cher pour vous. Une livraison à 39 €, une carte qui rend 5 %, une garantie plus longue : tout ça change la note finale. On fait le calcul à votre place.</p>
+      </div>
+      <ul class="pillars">
+        <li><b>Livraison</b><span>Offerte ou payante, on l'ajoute.</span></li>
+        <li><b>Cartes de fidélité</b><span>On retire ce qu'elles vous rendent.</span></li>
+        <li><b>Garantie</b><span>Affichée à côté, enseigne par enseigne.</span></li>
+        <li><b>Crédit</b><span>On vous prévient quand une carte est un crédit.</span></li>
+      </ul>
+    </section>
+
+    <section id="faq" class="block">
+      <h2 class="title">Questions fréquentes</h2>
+      <div class="faq">
+        <details><summary>C'est vraiment gratuit ?</summary><p>Oui. Quand vous achetez via nos liens, l'enseigne peut nous verser une petite commission. Vous ne payez rien de plus, et ça ne change jamais le classement.</p></details>
+        <details><summary>D'où viennent les avantages des cartes ?</summary><p>Des sites officiels de chaque enseigne. Nous les vérifions régulièrement.</p></details>
+        <details><summary>Faut-il créer un compte ?</summary><p>Non. Vos cartes cochées restent seulement sur votre appareil.</p></details>
+        <details><summary>Et les prix ?</summary><p>Les prix en direct arrivent bientôt. En attendant, chaque fiche vous emmène directement sur le produit chez l'enseigne.</p></details>
+      </div>
+    </section>
   </div>
 
   <div id="detail" class="compare" hidden></div>
@@ -353,11 +469,12 @@ function renderDetail(p) {
         <a class="go" href="${linkFor(r.site, p)}" target="_blank" rel="noopener">Voir le prix sur ${r.site} ↗</a>
       </article>`;
     }).join("")}`;
-  document.getElementById("back").onclick = () => { current = null; d.hidden = true; document.getElementById("home").hidden = false; };
+  document.getElementById("back").onclick = () => { current = null; d.hidden = true; document.getElementById("home").hidden = false; document.getElementById("comparer").scrollIntoView(); };
   window.scrollTo({ top: 0 });
 }
 
 document.getElementById("q").addEventListener("input", renderShelf);
+document.getElementById("q").addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("comparer").scrollIntoView(); });
 renderCards(); renderShelf();
 </script>
 </body>
