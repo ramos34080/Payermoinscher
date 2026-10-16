@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="PayezMoinsCher compare le même produit sur 8 sites fiables et vous montre ce qu'il vous coûte vraiment une fois vos cartes de fidélité comptées.">
+<title>PayezMoinsCher</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one mobile-first column; search on top, product shelf, then a ranked receipt-like comparison per product. */
+:root {
+  --bg: #f3f5f8;
+  --surface: #ffffff;
+  --ink: #142033;
+  --muted: #5b6577;
+  --line: #dde2ea;
+  --accent: #f2b705;        /* étiquette prix */
+  --accent-ink: #3a2c00;
+  --best: #0f7a4f;
+  --best-bg: #e3f4ec;
+  --warn: #9a4b00;
+  --warn-bg: #fff1dc;
+  --chip: #e9edf3;
+  --font-display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1520; --surface: #172131; --ink: #e8edf5; --muted: #9aa6b8; --line: #2a3648;
+    --accent: #f5c431; --accent-ink: #2a2000; --best: #5fd3a0; --best-bg: #123527;
+    --warn: #ffb866; --warn-bg: #3a2610; --chip: #223047; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1520; --surface: #172131; --ink: #e8edf5; --muted: #9aa6b8; --line: #2a3648;
+  --accent: #f5c431; --accent-ink: #2a2000; --best: #5fd3a0; --best-bg: #123527;
+  --warn: #ffb866; --warn-bg: #3a2610; --chip: #223047; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0;
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 48px;
+}
+.wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+header { display: flex; flex-direction: column; gap: 6px; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.tag {
+  width: 34px; height: 34px; background: var(--accent); color: var(--accent-ink);
+  border-radius: 6px 6px 6px 18px; display: grid; place-items: center;
+  font-family: var(--font-display); font-weight: 800; font-size: 18px;
+}
+h1 { font-family: var(--font-display); font-weight: 800; font-size: 28px; margin: 0; letter-spacing: -0.01em; }
+.sub { color: var(--muted); margin: 0; max-width: 60ch; text-wrap: balance; }
+.demo { font-size: 12.5px; color: var(--warn); background: var(--warn-bg); border-radius: 8px; padding: 8px 10px; }
+
+.search { position: relative; }
+.search input {
+  width: 100%; font: inherit; font-size: 16px; color: var(--ink); background: var(--surface);
+  border: 1.5px solid var(--line); border-radius: 12px; padding: 13px 14px 13px 42px;
+}
+.search input:focus { outline: none; border-color: var(--ink); }
+.search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+
+h2 { font-family: var(--font-display); font-weight: 600; font-size: 18px; margin: 0; }
+.section { display: flex; flex-direction: column; gap: 10px; }
+.label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+
+.cards { display: flex; flex-wrap: wrap; gap: 8px; }
+.card-toggle {
+  font: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink); background: var(--chip);
+  border: 1.5px solid transparent; border-radius: 999px; padding: 7px 12px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.card-toggle[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.card-toggle:focus-visible, .product:focus-visible, .back:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.card-toggle .tick { width: 14px; text-align: center; }
+
+.shelf { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.product {
+  text-align: left; font: inherit; color: inherit; background: var(--surface); border: 1.5px solid var(--line);
+  border-radius: 12px; padding: 12px 14px; cursor: pointer; display: flex; flex-direction: column; gap: 6px; min-width: 0;
+}
+.product:hover { border-color: var(--ink); }
+.product .cat { font-size: 12px; color: var(--muted); }
+.product .name { font-weight: 700; }
+.product .from { font-size: 13.5px; color: var(--muted); }
+.product .from b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.energy { display: inline-block; font-size: 11px; font-weight: 700; color: #fff; padding: 1px 7px 1px 5px; clip-path: polygon(0 0, 85% 0, 100% 50%, 85% 100%, 0 100%); }
+.empty { color: var(--muted); }
+
+.compare { display: flex; flex-direction: column; gap: 14px; }
+.back { align-self: flex-start; font: inherit; font-weight: 600; color: var(--ink); background: none; border: none; padding: 4px 0; cursor: pointer; }
+.ptitle { display: flex; flex-direction: column; gap: 4px; }
+.ptitle h2 { font-size: 22px; text-wrap: balance; }
+.summary { background: var(--best-bg); color: var(--ink); border-radius: 12px; padding: 12px 14px; }
+.summary b { color: var(--best); }
+
+.offer {
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: 12px; padding: 14px;
+  display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; min-width: 0;
+}
+.offer.best { border-color: var(--best); box-shadow: 0 0 0 1px var(--best) inset; }
+.offer .site { font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.badge { font-size: 11.5px; font-weight: 700; color: var(--best); background: var(--best-bg); padding: 2px 8px; border-radius: 999px; }
+.real { text-align: right; }
+.real .v { font-family: var(--font-display); font-weight: 800; font-size: 22px; font-variant-numeric: tabular-nums; }
+.real .k { font-size: 11.5px; color: var(--muted); }
+.lines { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 3px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 14px; }
+.line { display: flex; justify-content: space-between; gap: 12px; }
+.line span:last-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.line.minus span:last-child { color: var(--best); }
+.hint { grid-column: 1 / -1; font-size: 13px; color: var(--muted); margin-top: 6px; }
+.credit { grid-column: 1 / -1; font-size: 12.5px; color: var(--warn); background: var(--warn-bg); border-radius: 8px; padding: 6px 9px; margin-top: 6px; }
+.go { grid-column: 1 / -1; margin-top: 8px; justify-self: start; font-weight: 600; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+footer { font-size: 12.5px; color: var(--muted); }
+.legal { margin: 0; font-size: 13.5px; color: var(--muted); }
+.legal a, .w-body a { color: var(--ink); text-underline-offset: 3px; }
+.warranty { grid-column: 1 / -1; margin-top: 8px; border-top: 1px dashed var(--line); padding-top: 8px; }
+.warranty summary { cursor: pointer; display: flex; justify-content: space-between; gap: 12px; font-size: 14px; font-weight: 600; list-style: none; }
+.warranty summary::-webkit-details-marker { display: none; }
+.warranty summary::after { content: "▾"; color: var(--muted); }
+.warranty[open] summary::after { content: "▴"; }
+.warranty summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.w-sum { margin-left: auto; font-weight: 500; color: var(--muted); }
+.w-body { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; margin-top: 8px; }
+.w-body p { margin: 0; }
+.w-cond { color: var(--muted); }
+.w-max { color: var(--best); font-weight: 600; }
+@media (prefers-reduced-motion: no-preference) { .offer { transition: border-color .15s; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><div class="tag" aria-hidden="true">€</div><h1>PayezMoinsCher</h1></div>
+    <p class="sub">Le même produit sur 8 sites fiables, classé par ce qu'il vous coûte vraiment une fois vos cartes de fidélité comptées.</p>
+    <div class="demo">Maquette : les produits et les prix sont des exemples. Les avantages des cartes viennent des sites officiels des enseignes.</div>
+  </header>
+
+  <div id="home" class="wrap" style="gap:22px">
+    <label class="search" for="q">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Lave-linge, télé, aspirateur…" autocomplete="off" aria-label="Chercher un produit">
+    </label>
+
+    <div class="section">
+      <h2>Mes cartes</h2>
+      <span class="label">Cochez celles que vous avez déjà</span>
+      <div class="cards" id="cards"></div>
+    </div>
+
+    <div class="section">
+      <h2 id="shelfTitle">Produits</h2>
+      <div class="shelf" id="shelf"></div>
+    </div>
+  </div>
+
+  <div id="detail" class="compare" hidden></div>
+
+  <footer>Coût réel = prix + livraison − avantages de vos cartes. Les cartes payantes ont aussi une cotisation annuelle, indiquée sur chaque carte.</footer>
+</div>
+
+<script>
+const CARDS = {
+  confo:   { site: "Conforama",  name: "Confo+",            fee: "15 €/an",                 rate: 0.05, label: "Cagnotte Confo+ 5 %" },
+  fnac:    { site: "Fnac",       name: "Fnac+",             fee: "9,99 € puis 14,99 €/an",  rate: 0.05, label: "Remise Fnac+ 5 %", freeShip: true, also: { site: "Darty", cat: "gros", rate: 0.05, label: "Cagnotte Fnac+ chez Darty 5 %" } },
+  cdav:    { site: "Cdiscount",  name: "Cdiscount à volonté", fee: "29 €/an",               freeShip: true },
+  but:     { site: "But",        name: "Carte But",         fee: "14,90 €/an",              rate: 0.02, label: "Points carte But 2 %", credit: true },
+  bplus:   { site: "Boulanger",  name: "Carte b+",          fee: "10 €/an",                 rate: 0.02, label: "Cagnotte b+ 2 %", credit: true },
+  dmax:    { site: "Darty",      name: "Darty Max",         fee: "dès 11,99 €/mois",        freeShip: true },
+  prime:   { site: "Amazon",     name: "Amazon Prime",      fee: "69,90 €/an",              freeShip: true },
+};
+const LINKS = { Conforama: "https://www.conforama.fr", Fnac: "https://www.fnac.com", Cdiscount: "https://www.cdiscount.com", But: "https://www.but.fr", Boulanger: "https://www.boulanger.com", Darty: "https://www.darty.com", Amazon: "https://www.amazon.fr", "Electro Dépôt": "https://www.electrodepot.fr" };
+const SITE_DELIVERY_FREE = { Boulanger: true }; // livraison offerte pour tous chez Boulanger
+
+// Garanties relevées sur les sites officiels (octobre 2026)
+const LEGAL = "https://www.service-public.gouv.fr/particuliers/vosdroits/F11094";
+const WARRANTY = {
+  "Darty": { years: 2, incl: "2 ans, réparés par le SAV Darty.",
+    ext: "Extension à 3 ou 5 ans au total selon l'appareil. Réparation sous 30 jours, sinon échange. Échange aussi si la même panne revient plus de 3 fois. Dépannage à domicile pour le gros électroménager.",
+    excl: "Pas couvert : accident, choc, foudre, mauvaise utilisation, usage professionnel, consommables.",
+    price: "Prix de l'extension non affiché en ligne.", maxNote: "Avec Darty Max : réparation illimitée tant que l'abonnement dure.",
+    src: "https://www.darty.com/services/solutions/savoir_faire/les-garanties-darty/les-garanties-sur-mesure/les-garanties-sur-mesure-protegez-vos-appareils-jusqua-5-ans" },
+  "Boulanger": { years: 2, incl: "2 ans, avec assistance téléphonique 7j/7, dépannage à domicile pour le gros électroménager et les TV de plus de 101 cm, et prêt d'un appareil pendant la réparation (selon stock).",
+    ext: "1 an offert en plus sur le gros électroménager de marque Essentiel b. Extensions payantes proposées en magasin.",
+    excl: "Réparation impossible ou pas faite en 1 mois : remboursement total ou partiel.",
+    price: "Prix des extensions non affiché en ligne.", src: "https://www.boulanger.com/evenement/les-garanties" },
+  "But": { years: 2, incl: "2 ans.",
+    ext: "Garantie prolongée : 3 ans de plus, commence 2 ans et 1 jour après la livraison. Réparation, ou remplacement à neuf. À la fin : 20 % de remise pour racheter un appareil (30 % avec la carte But), une seule fois.",
+    excl: "Exclusions détaillées seulement dans les conditions générales de vente.",
+    price: "Prix non affiché en ligne.", src: "https://www.but.fr/Landing/Pages/LongTermWarranty" },
+  "Conforama": { years: 2, incl: "2 ans.",
+    ext: "Extension jusqu'à 5 ans au total. Déplacement, pièces et main d'œuvre pris en charge, ou bon d'achat si l'appareil n'est pas réparable. 20 % de remise sur un nouvel achat si la garantie n'a pas servi.",
+    excl: "Conditions vérifiées pour les meubles ; à confirmer pour l'électroménager.",
+    price: "Prix non affiché en ligne.", src: "https://www.conforama.fr/services/garanties" },
+  "Electro Dépôt": { years: 2, incl: "2 ans sur tous les appareils neufs.",
+    ext: "Electrosûr (assurance) : couvert tant que l'abonnement dure, même pour un appareil acheté ailleurs de moins de 3 ans. Remboursé en bons d'achat si irréparable.",
+    excl: "Maximum 2 pannes et 3 000 € par an. Rien n'est couvert les 30 premiers jours. Engagement d'un an.",
+    price: "6 €/mois pour une catégorie, 11 € pour deux, 15 € pour tout le foyer.", src: "https://www.electrodepot.fr/electrosur" },
+  "Fnac": { years: 2, incl: "2 ans.",
+    ext: "Garantie échange à neuf proposée en option sur les produits techniques.",
+    excl: "Conditions dans la notice de la garantie.",
+    price: "Prix non affiché en ligne.", src: "http://multimedia.fnac.com/multimedia/editorial/services/contrats_notices_services/notice_garantie_echange_tous_produits_techniques.pdf" },
+  "Cdiscount": { years: 2, incl: "2 ans si l'article est vendu par Cdiscount. Si c'est un vendeur tiers, c'est lui qui doit la garantie.",
+    ext: null, excl: null, price: null, src: LEGAL },
+  "Amazon": { years: 2, incl: "2 ans si l'article est vendu par Amazon. Si c'est un vendeur tiers, c'est lui qui doit la garantie.",
+    ext: null, excl: null, price: null, src: LEGAL },
+};
+
+const ENERGY = { A: "#00a651", B: "#50b848", C: "#bed630", D: "#fff200", E: "#fdb913", F: "#f37021", G: "#ed1c24" };
+const PRODUCTS = [
+  { id: "ll", cat: "gros", catLabel: "Lave-linge", name: "Lave-linge Bosch Série 6, 9 kg", energy: "A", offers: [
+    ["Darty", 649, 0], ["Boulanger", 659, 0], ["But", 669, 29], ["Conforama", 679, 39], ["Electro Dépôt", 629, 49], ["Cdiscount", 639, 39] ] },
+  { id: "fr", cat: "gros", catLabel: "Réfrigérateur", name: "Réfrigérateur combiné Samsung 390 L", energy: "C", offers: [
+    ["Darty", 899, 0], ["Boulanger", 879, 0], ["But", 869, 39], ["Conforama", 889, 49], ["Amazon", 859, 0], ["Cdiscount", 849, 49] ] },
+  { id: "tv", cat: "tv", catLabel: "Téléviseur", name: "TV LG OLED 55 pouces", energy: "F", offers: [
+    ["Fnac", 1199, 0], ["Darty", 1199, 0], ["Boulanger", 1179, 0], ["Amazon", 1149, 0], ["Cdiscount", 1159, 19], ["Electro Dépôt", 1169, 29] ] },
+  { id: "asp", cat: "petit", catLabel: "Aspirateur", name: "Aspirateur balai Dyson V15", energy: null, offers: [
+    ["Fnac", 599, 0], ["Darty", 599, 0], ["Boulanger", 589, 0], ["Amazon", 579, 0], ["But", 609, 19], ["Cdiscount", 585, 9.99] ] },
+  { id: "lv", cat: "gros", catLabel: "Lave-vaisselle", name: "Lave-vaisselle Beko 14 couverts", energy: "B", offers: [
+    ["Conforama", 449, 39], ["But", 459, 29], ["Boulanger", 469, 0], ["Darty", 479, 0], ["Electro Dépôt", 429, 49] ] },
+  { id: "mo", cat: "petit", catLabel: "Micro-ondes", name: "Micro-ondes Samsung 23 L", energy: null, offers: [
+    ["Conforama", 119, 19], ["But", 115, 19], ["Boulanger", 129, 0], ["Darty", 129, 0], ["Amazon", 109, 0], ["Electro Dépôt", 99, 19] ] },
+];
+
+const eur = n => n.toLocaleString("fr-FR", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }) + " €";
+
+let owned = new Set(["confo"]);
+try { const s = JSON.parse(localStorage.getItem("oa-cards") || "null"); if (Array.isArray(s)) owned = new Set(s); } catch (e) {}
+const save = () => { try { localStorage.setItem("oa-cards", JSON.stringify([...owned])); } catch (e) {} };
+
+function perksFor(site, product, cardSet) {
+  // returns {delivery multiplier, discounts[], credit, freeShipBy}
+  const out = { discounts: [], freeShipBy: null, credit: false };
+  for (const [key, c] of Object.entries(CARDS)) {
+    if (!cardSet.has(key)) continue;
+    if (c.site === site) {
+      if (c.freeShip) out.freeShipBy = c.name;
+      if (c.rate) out.discounts.push({ label: c.label, rate: c.rate });
+      if (c.credit) out.credit = true;
+    }
+    if (c.also && c.also.site === site && c.also.cat === product.cat) out.discounts.push({ label: c.also.label, rate: c.also.rate });
+  }
+  return out;
+}
+function compute(site, price, delivery, product, cardSet) {
+  const p = perksFor(site, product, cardSet);
+  const ship = SITE_DELIVERY_FREE[site] || p.freeShipBy ? 0 : delivery;
+  const disc = p.discounts.map(d => ({ label: d.label, amount: Math.round(price * d.rate * 100) / 100 }));
+  const real = price + ship - disc.reduce((a, d) => a + d.amount, 0);
+  return { site, price, delivery, ship, freeShipBy: p.freeShipBy, disc, real, credit: p.credit };
+}
+function cardsOf(site) { return Object.entries(CARDS).filter(([, c]) => c.site === site || (c.also && c.also.site === site)); }
+
+function renderCards() {
+  const el = document.getElementById("cards");
+  el.innerHTML = "";
+  for (const [key, c] of Object.entries(CARDS)) {
+    const b = document.createElement("button");
+    b.className = "card-toggle"; b.id = "card-" + key; b.type = "button";
+    b.setAttribute("aria-pressed", owned.has(key));
+    b.innerHTML = `<span class="tick" aria-hidden="true">${owned.has(key) ? "✓" : "+"}</span>${c.name}`;
+    b.title = c.site + " · " + c.fee;
+    b.onclick = () => { owned.has(key) ? owned.delete(key) : owned.add(key); save(); renderCards(); renderShelf(); if (current) renderDetail(current); };
+    el.appendChild(b);
+  }
+}
+function best(product) { return product.offers.map(([s, p, d]) => compute(s, p, d, product, owned)).sort((a, b) => a.real - b.real)[0]; }
+function energyTag(e) { return e ? `<span class="energy" style="background:${ENERGY[e]};${"DE".includes(e) ? "color:#1a1a1a" : ""}">${e}</span>` : ""; }
+
+function renderShelf() {
+  const q = document.getElementById("q").value.trim().toLowerCase();
+  const list = PRODUCTS.filter(p => !q || (p.name + " " + p.catLabel).toLowerCase().includes(q));
+  const el = document.getElementById("shelf");
+  document.getElementById("shelfTitle").textContent = q ? `${list.length} résultat${list.length > 1 ? "s" : ""}` : "Produits";
+  el.innerHTML = list.length ? "" : `<p class="empty">Aucun produit pour « ${q.replace(/[<>&]/g, "")} » dans cette maquette. Essayez « lave », « TV » ou « Dyson ».</p>`;
+  for (const p of list) {
+    const b = best(p);
+    const btn = document.createElement("button");
+    btn.className = "product"; btn.type = "button"; btn.id = "prod-" + p.id;
+    btn.innerHTML = `<span class="cat">${p.catLabel} ${energyTag(p.energy)}</span><span class="name">${p.name}</span><span class="from">Coût réel dès <b>${eur(b.real)}</b> chez ${b.site}</span>`;
+    btn.onclick = () => { current = p; renderDetail(p); };
+    el.appendChild(btn);
+  }
+}
+
+let current = null;
+function renderDetail(p) {
+  document.getElementById("home").hidden = true;
+  const d = document.getElementById("detail"); d.hidden = false;
+  const rows = p.offers.map(([s, pr, dl]) => compute(s, pr, dl, p, owned)).sort((a, b) => a.real - b.real);
+  const cheapestShown = [...rows].sort((a, b) => a.price - b.price)[0];
+  const top = rows[0];
+  let summary = `Le meilleur coût réel est chez <b>${top.site}</b> : ${eur(top.real)}.`;
+  if (cheapestShown.site !== top.site) summary += ` Le prix affiché le plus bas est chez ${cheapestShown.site} (${eur(cheapestShown.price)}), mais il revient à ${eur(cheapestShown.real)} pour vous.`;
+
+  d.innerHTML = `
+    <button class="back" type="button" id="back">← Tous les produits</button>
+    <div class="ptitle"><span class="label">${p.catLabel} ${energyTag(p.energy)}</span><h2>${p.name}</h2></div>
+    <div class="summary">${summary}</div>
+    <p class="legal">Partout, un appareil neuf a <b>2 ans de garantie légale</b>, due par le vendeur : réparation, échange ou remboursement, et 12 mois de plus après une réparation. <a href="${LEGAL}" target="_blank" rel="noopener">Service-public.fr ↗</a></p>
+    ${rows.map((r, i) => {
+      const lines = [`<div class="line"><span>Prix affiché</span><span>${eur(r.price)}</span></div>`];
+      lines.push(`<div class="line"><span>Livraison${r.freeShipBy ? " (offerte avec " + r.freeShipBy + ")" : SITE_DELIVERY_FREE[r.site] && r.delivery ? " (offerte)" : ""}</span><span>${r.ship ? "+ " + eur(r.ship) : "0 €"}</span></div>`);
+      r.disc.forEach(x => lines.push(`<div class="line minus"><span>${x.label}</span><span>− ${eur(x.amount)}</span></div>`));
+      // what the user would pay with cards of this site they don't own
+      const missing = cardsOf(r.site).filter(([k]) => !owned.has(k));
+      let hint = "";
+      if (missing.length) {
+        const withAll = new Set([...owned, ...missing.map(([k]) => k)]);
+        const alt = compute(r.site, r.price, r.delivery, p, withAll);
+        if (alt.real < r.real - 0.005) hint = `<div class="hint">Avec ${missing.map(([, c]) => c.name).join(" et ")} (${missing.map(([, c]) => c.fee).join(", ")}), vous paieriez ${eur(alt.real)}.</div>`;
+      }
+      const w = WARRANTY[r.site];
+      const wMax = w.maxNote && owned.has("dmax") ? `<p class="w-max">${w.maxNote}</p>` : "";
+      const warranty = `<details class="warranty" id="w-${p.id}-${r.site.replace(/\W/g, "")}">
+        <summary><span>Garantie</span><span class="w-sum">${w.years} ans inclus${w.ext ? " · extension possible" : ""}</span></summary>
+        <div class="w-body">
+          <p><b>Incluse :</b> ${w.incl}</p>${wMax}
+          ${w.ext ? `<p><b>En option :</b> ${w.ext}</p>` : ""}
+          ${w.price ? `<p><b>Prix :</b> ${w.price}</p>` : ""}
+          ${w.excl ? `<p class="w-cond"><b>Conditions :</b> ${w.excl}</p>` : ""}
+          <a href="${w.src}" target="_blank" rel="noopener">Source officielle ↗</a>
+        </div>
+      </details>`;
+      const credit = r.credit ? `<div class="credit">La carte de ce magasin est une carte de crédit renouvelable. Un crédit vous engage et doit être remboursé.</div>` : "";
+      return `<article class="offer${i === 0 ? " best" : ""}">
+        <div class="site">${r.site}${i === 0 ? '<span class="badge">Meilleur coût réel</span>' : ""}</div>
+        <div class="real"><div class="v">${eur(r.real)}</div><div class="k">coût réel</div></div>
+        <div class="lines">${lines.join("")}</div>${hint}${credit}${warranty}
+        <a class="go" href="${LINKS[r.site]}" target="_blank" rel="noopener">Voir sur ${r.site} ↗</a>
+      </article>`;
+    }).join("")}`;
+  document.getElementById("back").onclick = () => { current = null; d.hidden = true; document.getElementById("home").hidden = false; };
+  window.scrollTo({ top: 0 });
+}
+
+document.getElementById("q").addEventListener("input", renderShelf);
+renderCards(); renderShelf();
+</script>
+</body>
+</html>
