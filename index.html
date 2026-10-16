@@ -196,6 +196,45 @@ footer .links a:hover, footer .links a:focus-visible { color: var(--accent); tex
 #detail { max-width: 720px; width: 100%; margin: 24px auto 0; }
 footer { border-top: 1px solid var(--line); padding-top: 24px; margin-top: 8px; }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+section[id], #detail { scroll-margin-top: 76px; }
+/* Inspirations When to Cop : barre fixe avec recherche, bandeau défilant, rangées qui défilent, vignettes produit */
+.top { position: sticky; top: 0; z-index: 20; background: rgba(14,13,15,.94); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 0 0 100vmax rgba(14,13,15,.94); clip-path: inset(0 -100vmax); margin-top: -20px; padding: 12px 0; flex-wrap: nowrap; }
+.navsearch { position: relative; display: flex; align-items: center; flex: 0 1 240px; min-width: 0; }
+.navsearch svg { position: absolute; left: 12px; color: var(--muted); }
+.navsearch input { width: 100%; font: inherit; font-size: 14px; color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 999px; padding: 8px 12px 8px 34px; }
+.navsearch input:focus { outline: none; border-color: var(--accent); }
+@media (max-width: 760px) { .navlinks { display: none; } .logo { font-size: 18px; } .top .tag { width: 34px; height: 34px; } }
+@media (max-width: 420px) { .logo { display: none; } .navsearch { flex: 1 1 auto; } }
+.marquee { overflow: hidden; border-block: 1px solid var(--line); background: #121410; padding: 14px 0;
+  box-shadow: 0 0 0 100vmax #121410; clip-path: inset(0 -100vmax); }
+.marquee-track { display: flex; gap: 28px; width: max-content; font-family: var(--font-display); font-weight: 800; font-size: clamp(22px, 4vw, 34px); text-transform: uppercase; letter-spacing: .02em; white-space: nowrap; }
+.marquee-track span { color: transparent; -webkit-text-stroke: 1.5px var(--accent); }
+.marquee-track .dot { color: var(--accent); -webkit-text-stroke: 0; }
+@media (prefers-reduced-motion: no-preference) { .marquee-track { animation: defile 28s linear infinite; } }
+@keyframes defile { to { transform: translateX(-50%); } }
+.row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.row-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.arrows { display: flex; gap: 6px; }
+.arr { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font-size: 20px; line-height: 1; cursor: pointer; }
+.arr:hover, .arr:focus-visible { border-color: var(--accent); outline: none; }
+.track { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 260px); gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; scrollbar-width: thin; }
+.track .product { scroll-snap-align: start; }
+.product { padding: 0; overflow: hidden; gap: 0; }
+.pvis { position: relative; display: grid; place-items: center; height: 140px; background: radial-gradient(circle at 50% 60%, #26301a, #1b1a1f 70%); color: var(--accent); }
+.pvis.big { height: auto; min-height: 220px; border-radius: 16px; border: 1px solid var(--line); }
+.pbadge { position: absolute; top: 10px; left: 10px; font-size: 12px; font-weight: 800; color: var(--accent-ink); background: var(--accent); border-radius: 999px; padding: 3px 9px; }
+.pbody { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px 14px; }
+.phero { display: grid; gap: 16px; }
+@media (min-width: 640px) { .phero { grid-template-columns: 220px 1fr; align-items: start; } }
+.pinfo { display: flex; flex-direction: column; gap: 12px; }
+.facts { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.facts div { background: var(--surface); padding: 10px 12px; }
+.facts dt { font-size: 11.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.facts dd { margin: 2px 0 0; font-weight: 600; overflow-wrap: anywhere; }
+.shops-title { font-family: var(--font-display); font-size: 20px; margin: 6px 0 0; }
+.shops-title .muted { font-family: var(--font-body); font-size: 14px; font-weight: 500; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -204,6 +243,7 @@ footer { border-top: 1px solid var(--line); padding-top: 24px; margin-top: 8px; 
   <nav class="top" aria-label="Menu">
     <a class="brand" href="./" aria-label="PayezMoinsCher, accueil"><div class="tag" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 100 100" fill="none" stroke="#0e0d0f" stroke-linecap="round" stroke-linejoin="round"><path d="M64 30a24 24 0 1 0 0 40" stroke-width="10"/><path d="M24 44h32M24 56h28" stroke-width="8"/><path d="M80 30v32m-11-11 11 11 11-11" stroke-width="8"/></svg></div><span class="logo">PayezMoins<span class="cher">Cher<svg viewBox="0 0 100 50" preserveAspectRatio="none" aria-hidden="true"><line x1="2" y1="29" x2="98" y2="29" stroke="#0e0d0f" stroke-width="4.5" stroke-linecap="round"/></svg></span></span></a>
     <div class="navlinks"><a href="#comment">Comment ça marche</a><a href="#comparer">Produits</a><a href="#faq">FAQ</a></div>
+    <label class="navsearch" for="qtop"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="qtop" type="search" placeholder="Chercher un produit" autocomplete="off" aria-label="Chercher un produit"></label>
   </nav>
 
   <div id="home">
@@ -232,6 +272,8 @@ footer { border-top: 1px solid var(--line); padding-top: 24px; margin-top: 8px; 
       </figure>
     </section>
 
+    <div class="marquee" aria-hidden="true"><div class="marquee-track"><span>Payez moins cher</span><span class="dot">€↓</span><span>Coût réel</span><span class="dot">€↓</span><span>Payez moins cher</span><span class="dot">€↓</span><span>Coût réel</span><span class="dot">€↓</span><span>Payez moins cher</span><span class="dot">€↓</span><span>Coût réel</span><span class="dot">€↓</span><span>Payez moins cher</span><span class="dot">€↓</span><span>Coût réel</span><span class="dot">€↓</span></div></div>
+
     <section id="comment" class="block">
       <h2 class="title">Comment ça marche</h2>
       <ol class="steps">
@@ -256,8 +298,9 @@ footer { border-top: 1px solid var(--line); padding-top: 24px; margin-top: 8px; 
         <div class="cards" id="cards"></div>
       </div>
       <div class="section">
-        <h3 class="h3" id="shelfTitle">Produits</h3>
-        <div class="shelf" id="shelf"></div>
+        <h3 class="h3" id="shelfTitle" hidden>Produits</h3>
+        <div id="rows"></div>
+        <div class="shelf" id="shelf" hidden></div>
       </div>
       <div class="section" id="everywhere" hidden></div>
     </section>
@@ -347,14 +390,14 @@ const ENERGY = { A: "#00a651", B: "#50b848", C: "#bed630", D: "#fff200", E: "#fd
 const GROS = ["Darty", "Boulanger", "But", "Conforama", "Electro Dépôt", "Cdiscount"];
 const TECH = ["Fnac", "Darty", "Boulanger", "Amazon", "Cdiscount", "Electro Dépôt"];
 const PRODUCTS = [
-  { id: "ll", cat: "gros", catLabel: "Lave-linge", name: "Lave-linge Bosch Série 6 WGG244Z3FR", specs: "9 kg · 1400 tours/min", energy: "A", ref: "WGG244Z3FR", sites: GROS },
-  { id: "fr", cat: "gros", catLabel: "Réfrigérateur", name: "Réfrigérateur combiné Samsung RB38C7B6DS9", specs: "390 L · inox", energy: "D", ref: "RB38C7B6DS9", sites: GROS },
-  { id: "lv", cat: "gros", catLabel: "Lave-vaisselle", name: "Lave-vaisselle Bosch Série 4 SMS4HUI09F", specs: "13 couverts · pose libre, 60 cm", energy: "D", ref: "SMS4HUI09F", sites: GROS },
-  { id: "tv", cat: "tv", catLabel: "Téléviseur", name: "TV LG OLED evo 55C5 (2025)", specs: "55 pouces (139 cm) · 4K", energy: null, ref: "OLED55C5", sites: TECH },
-  { id: "asp", cat: "petit", catLabel: "Aspirateur", name: "Aspirateur balai Dyson V15 Detect Absolute", specs: "Sans fil", energy: null, ref: "Dyson V15 Detect Absolute", sites: TECH },
-  { id: "mo", cat: "petit", catLabel: "Micro-ondes", name: "Micro-ondes Samsung MS23K3513AS", specs: "23 L · 800 W", energy: null, ref: "MS23K3513AS", sites: ["Darty", "Boulanger", "But", "Conforama", "Amazon", "Cdiscount"] },
-  { id: "af", cat: "petit", catLabel: "Friteuse sans huile", name: "Ninja Foodi MAX Dual Zone AF400EU", specs: "9,5 L · 2 paniers", energy: null, ref: "Ninja AF400EU", sites: TECH },
-  { id: "ps5", cat: "tech", catLabel: "Console", name: "PlayStation 5 Slim, édition standard", specs: "Avec lecteur de disque", energy: null, ref: "PS5 Slim standard", sites: ["Fnac", "Darty", "Boulanger", "Amazon", "Cdiscount", "Conforama"] },
+  { id: "ll", brand: "Bosch", cat: "gros", catLabel: "Lave-linge", name: "Lave-linge Bosch Série 6 WGG244Z3FR", specs: "9 kg · 1400 tours/min", energy: "A", ref: "WGG244Z3FR", sites: GROS },
+  { id: "fr", brand: "Samsung", cat: "gros", catLabel: "Réfrigérateur", name: "Réfrigérateur combiné Samsung RB38C7B6DS9", specs: "390 L · inox", energy: "D", ref: "RB38C7B6DS9", sites: GROS },
+  { id: "lv", brand: "Bosch", cat: "gros", catLabel: "Lave-vaisselle", name: "Lave-vaisselle Bosch Série 4 SMS4HUI09F", specs: "13 couverts · pose libre, 60 cm", energy: "D", ref: "SMS4HUI09F", sites: GROS },
+  { id: "tv", brand: "LG", cat: "tv", catLabel: "Téléviseur", name: "TV LG OLED evo 55C5 (2025)", specs: "55 pouces (139 cm) · 4K", energy: null, ref: "OLED55C5", sites: TECH },
+  { id: "asp", brand: "Dyson", cat: "petit", catLabel: "Aspirateur", name: "Aspirateur balai Dyson V15 Detect Absolute", specs: "Sans fil", energy: null, ref: "Dyson V15 Detect Absolute", sites: TECH },
+  { id: "mo", brand: "Samsung", cat: "petit", catLabel: "Micro-ondes", name: "Micro-ondes Samsung MS23K3513AS", specs: "23 L · 800 W", energy: null, ref: "MS23K3513AS", sites: ["Darty", "Boulanger", "But", "Conforama", "Amazon", "Cdiscount"] },
+  { id: "af", brand: "Ninja", cat: "petit", catLabel: "Friteuse sans huile", name: "Ninja Foodi MAX Dual Zone AF400EU", specs: "9,5 L · 2 paniers", energy: null, ref: "Ninja AF400EU", sites: TECH },
+  { id: "ps5", brand: "Sony", cat: "tech", catLabel: "Console", name: "PlayStation 5 Slim, édition standard", specs: "Avec lecteur de disque", energy: null, ref: "PS5 Slim standard", sites: ["Fnac", "Darty", "Boulanger", "Amazon", "Cdiscount", "Conforama"] },
 ];
 const SEARCH = {
   Darty: q => "https://www.darty.com/nav/recherche?text=" + encodeURIComponent(q),
@@ -413,20 +456,63 @@ function topLine(p) {
   return `${p.sites.length} enseignes à comparer`;
 }
 
+const ICONS = {
+  "Lave-linge": '<rect x="14" y="8" width="52" height="64" rx="8"/><path d="M14 22h52"/><circle cx="40" cy="47" r="15"/><path d="M30 50c6 4 14 4 20-2"/><circle cx="24" cy="15" r="2"/><circle cx="32" cy="15" r="2"/>',
+  "Réfrigérateur": '<rect x="20" y="6" width="40" height="68" rx="7"/><path d="M20 30h40M28 16v6M28 38v12"/>',
+  "Lave-vaisselle": '<rect x="14" y="8" width="52" height="64" rx="8"/><path d="M14 22h52M24 15h18M24 34h32M24 34v26M40 34v26M56 34v26"/>',
+  "Téléviseur": '<rect x="8" y="14" width="64" height="40" rx="5"/><path d="M30 66h20M40 54v12"/><path d="M18 26l8-6M18 34l16-12" opacity=".6"/>',
+  "Aspirateur": '<path d="M50 6 34 58"/><path d="M50 6h8"/><rect x="40" y="18" width="14" height="22" rx="5" transform="rotate(18 47 29)"/><path d="M22 58h26l4 8H18z"/>',
+  "Micro-ondes": '<rect x="8" y="16" width="64" height="44" rx="6"/><rect x="16" y="24" width="36" height="28" rx="3"/><path d="M60 26v4M60 36v4M60 46h4"/>',
+  "Friteuse sans huile": '<rect x="14" y="10" width="52" height="58" rx="12"/><path d="M14 34h52M40 10v24"/><rect x="24" y="44" width="32" height="14" rx="4"/>',
+  "Console": '<path d="M26 10c-8 6-10 40-8 56 1 4 6 5 8 1l6-14h16l6 14c2 4 7 3 8-1 2-16 0-50-8-56"/><circle cx="34" cy="34" r="3"/><circle cx="46" cy="34" r="3"/>',
+};
+const icon = (p, size) => `<svg width="${size}" height="${size}" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[p.catLabel] || ""}</svg>`;
+function perkBadge(p) {
+  const t = ranked(p, owned)[0];
+  if (t.rate) return `<span class="pbadge">−${pct(t.rate)}</span>`;
+  if (t.freeShip) return `<span class="pbadge">Livraison offerte</span>`;
+  return "";
+}
+function card(p) {
+  const btn = document.createElement("button");
+  btn.className = "product"; btn.type = "button"; btn.id = "prod-" + p.id;
+  btn.innerHTML = `<span class="pvis">${perkBadge(p)}${icon(p, 64)}</span><span class="pbody"><span class="cat">${p.brand} · ${p.catLabel} ${energyTag(p.energy)}</span><span class="name">${p.name}</span><span class="specs">${p.specs}</span><span class="from">${topLine(p)}</span></span>`;
+  btn.onclick = () => { current = p; renderDetail(p); };
+  return btn;
+}
+const ROWS = [
+  { title: "Gros électroménager", emoji: "🧺", cats: ["gros"] },
+  { title: "TV, son & consoles", emoji: "🎮", cats: ["tv", "tech"] },
+  { title: "Petit électroménager", emoji: "⚡", cats: ["petit"] },
+];
+function renderRows() {
+  const el = document.getElementById("rows");
+  el.innerHTML = "";
+  for (const r of ROWS) {
+    const list = PRODUCTS.filter(p => r.cats.includes(p.cat));
+    if (!list.length) continue;
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `<div class="row-head"><h3 class="h3">${r.title} <span aria-hidden="true">${r.emoji}</span></h3><div class="arrows"><button type="button" class="arr" aria-label="Précédents">‹</button><button type="button" class="arr" aria-label="Suivants">›</button></div></div><div class="track"></div>`;
+    const track = row.querySelector(".track");
+    list.forEach(p => track.appendChild(card(p)));
+    const [prev, next] = row.querySelectorAll(".arr");
+    prev.onclick = () => track.scrollBy({ left: -track.clientWidth * 0.8, behavior: "smooth" });
+    next.onclick = () => track.scrollBy({ left: track.clientWidth * 0.8, behavior: "smooth" });
+    el.appendChild(row);
+  }
+}
 function renderShelf() {
   const q = document.getElementById("q").value.trim().toLowerCase();
-  const list = PRODUCTS.filter(p => !q || (p.name + " " + p.catLabel + " " + p.specs).toLowerCase().includes(q));
   const el = document.getElementById("shelf");
-  document.getElementById("shelfTitle").textContent = q ? (list.length ? `Nos fiches : ${list.length} résultat${list.length > 1 ? "s" : ""}` : "Nos fiches") : "Produits";
+  const title = document.getElementById("shelfTitle");
+  document.getElementById("rows").hidden = !!q; el.hidden = !q; title.hidden = !q;
+  if (!q) { renderRows(); renderEverywhere(""); return; }
+  const list = PRODUCTS.filter(p => (p.name + " " + p.brand + " " + p.catLabel + " " + p.specs).toLowerCase().includes(q));
+  title.textContent = list.length ? `Nos fiches : ${list.length} résultat${list.length > 1 ? "s" : ""}` : "Nos fiches";
   el.innerHTML = list.length ? "" : `<p class="empty">Ce produit n'a pas encore sa fiche chez nous. Cherchez-le directement chez chaque enseigne ci-dessous.</p>`;
+  list.forEach(p => el.appendChild(card(p)));
   renderEverywhere(document.getElementById("q").value.trim());
-  for (const p of list) {
-    const btn = document.createElement("button");
-    btn.className = "product"; btn.type = "button"; btn.id = "prod-" + p.id;
-    btn.innerHTML = `<span class="cat">${p.catLabel} ${energyTag(p.energy)}</span><span class="name">${p.name}</span><span class="specs">${p.specs}</span><span class="from">${topLine(p)}</span>`;
-    btn.onclick = () => { current = p; renderDetail(p); };
-    el.appendChild(btn);
-  }
 }
 
 // Recherche libre : n'importe quel produit, directement chez chaque enseigne, classées selon vos cartes.
@@ -458,7 +544,19 @@ function renderDetail(p) {
 
   d.innerHTML = `
     <button class="back" type="button" id="back">← Tous les produits</button>
-    <div class="ptitle"><span class="label">${p.catLabel} ${energyTag(p.energy)}</span><h2>${p.name}</h2><span class="specs">${p.specs}</span></div>
+    <div class="phero">
+      <div class="pvis big">${icon(p, 120)}</div>
+      <div class="pinfo">
+        <div class="ptitle"><span class="label">${p.brand} · ${p.catLabel}</span><h2>${p.name}</h2></div>
+        <dl class="facts">
+          <div><dt>Marque</dt><dd>${p.brand}</dd></div>
+          <div><dt>Référence</dt><dd>${p.ref}</dd></div>
+          <div><dt>Caractéristiques</dt><dd>${p.specs}</dd></div>
+          <div><dt>Classe énergie</dt><dd>${p.energy ? energyTag(p.energy) : "—"}</dd></div>
+        </dl>
+      </div>
+    </div>
+    <h3 class="shops-title">Où l'acheter <span class="muted">· classé selon vos cartes</span></h3>
     <div class="summary">${summary}</div>
     <p class="legal">Partout, un appareil neuf a <b>2 ans de garantie légale</b>, due par le vendeur : réparation, échange ou remboursement, et 12 mois de plus après une réparation. <a href="${LEGAL}" target="_blank" rel="noopener">Service-public.fr ↗</a></p>
     ${rows.map((r, i) => {
@@ -500,6 +598,11 @@ function renderDetail(p) {
 }
 
 document.getElementById("q").addEventListener("input", renderShelf);
+document.getElementById("qtop").addEventListener("input", e => {
+  document.getElementById("q").value = e.target.value;
+  if (current) { current = null; document.getElementById("detail").hidden = true; document.getElementById("home").hidden = false; }
+  renderShelf(); document.getElementById("comparer").scrollIntoView();
+});
 document.getElementById("q").addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("comparer").scrollIntoView(); });
 renderCards(); renderShelf();
 </script>
