@@ -186,6 +186,13 @@ footer .links a:hover, footer .links a:focus-visible { color: var(--accent); tex
 .faq details[open] summary::after { content: "−"; }
 .faq p { margin: 10px 0 0; color: var(--muted); }
 .faq summary:focus-visible, .navlinks a:focus-visible, .top .brand:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+.anywhere { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.anyshop { display: flex; flex-direction: column; gap: 3px; text-decoration: none; color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.anyshop.good { border-color: #3a4a14; }
+.anyshop span { font-size: 13.5px; color: var(--muted); }
+.anyshop.good span:nth-child(2) { color: var(--best); font-weight: 600; }
+.anyshop .arrow { color: var(--ink); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.anyshop:hover, .anyshop:focus-visible { border-color: var(--accent); outline: none; }
 #detail { max-width: 720px; width: 100%; margin: 24px auto 0; }
 footer { border-top: 1px solid var(--line); padding-top: 24px; margin-top: 8px; }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
@@ -252,6 +259,7 @@ footer { border-top: 1px solid var(--line); padding-top: 24px; margin-top: 8px; 
         <h3 class="h3" id="shelfTitle">Produits</h3>
         <div class="shelf" id="shelf"></div>
       </div>
+      <div class="section" id="everywhere" hidden></div>
     </section>
 
     <section class="block why">
@@ -409,8 +417,9 @@ function renderShelf() {
   const q = document.getElementById("q").value.trim().toLowerCase();
   const list = PRODUCTS.filter(p => !q || (p.name + " " + p.catLabel + " " + p.specs).toLowerCase().includes(q));
   const el = document.getElementById("shelf");
-  document.getElementById("shelfTitle").textContent = q ? `${list.length} résultat${list.length > 1 ? "s" : ""}` : "Produits";
-  el.innerHTML = list.length ? "" : `<p class="empty">Aucun produit pour « ${q.replace(/[<>&]/g, "")} » pour l'instant. Essayez « lave », « TV » ou « Dyson ».</p>`;
+  document.getElementById("shelfTitle").textContent = q ? (list.length ? `Nos fiches : ${list.length} résultat${list.length > 1 ? "s" : ""}` : "Nos fiches") : "Produits";
+  el.innerHTML = list.length ? "" : `<p class="empty">Ce produit n'a pas encore sa fiche chez nous. Cherchez-le directement chez chaque enseigne ci-dessous.</p>`;
+  renderEverywhere(document.getElementById("q").value.trim());
   for (const p of list) {
     const btn = document.createElement("button");
     btn.className = "product"; btn.type = "button"; btn.id = "prod-" + p.id;
@@ -418,6 +427,23 @@ function renderShelf() {
     btn.onclick = () => { current = p; renderDetail(p); };
     el.appendChild(btn);
   }
+}
+
+// Recherche libre : n'importe quel produit, directement chez chaque enseigne, classées selon vos cartes.
+const ALL_SITES = ["Darty", "Fnac", "Boulanger", "Conforama", "But", "Cdiscount", "Amazon", "Electro Dépôt"];
+function renderEverywhere(q) {
+  const el = document.getElementById("everywhere");
+  if (!q) { el.hidden = true; el.innerHTML = ""; return; }
+  const safe = q.replace(/[<>&"]/g, "");
+  const rows = ALL_SITES.map(site => ({ site, ...perksFor(site, { cat: null }, owned) })).sort((a, b) => score(b) - score(a));
+  el.hidden = false;
+  el.innerHTML = `<h3 class="h3">Chercher « ${safe} » partout</h3>
+    <span class="label">Enseignes classées selon vos cartes</span>
+    <div class="anywhere">${rows.map(r => {
+      const href = SEARCH[r.site] ? SEARCH[r.site](q) : LINKS[r.site];
+      const perk = r.rate ? `−${pct(r.rate)} avec vos cartes` : r.freeShip ? "Livraison offerte" : "Pas d'avantage avec vos cartes";
+      return `<a class="anyshop${r.rate || r.freeShip ? " good" : ""}" href="${href}" target="_blank" rel="noopener"><b>${r.site}</b><span>${perk}</span><span class="arrow">${SEARCH[r.site] ? "Voir les résultats ↗" : "Ouvrir le site ↗"}</span></a>`;
+    }).join("")}</div>`;
 }
 
 let current = null;
