@@ -6,39 +6,32 @@
 <meta name="description" content="PayezMoinsCher compare le même produit sur 8 sites fiables et vous montre ce qu'il vous coûte vraiment une fois vos cartes de fidélité comptées.">
 <!-- Awin --><meta name="awin" content="Awin">
 <title>PayezMoinsCher</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2228%22 fill=%22%23c6ff3d%22/%3E%3Cg fill=%22none%22 stroke=%22%230e0d0f%22 stroke-linecap=%22round%22 transform=%22translate(10 10) scale(.8)%22%3E%3Cpath d=%22M64 30a24 24 0 1 0 0 40%22 stroke-width=%2210%22/%3E%3Cpath d=%22M24 44h32M24 56h28%22 stroke-width=%228%22/%3E%3Cpath d=%22M80 30v32m-11-11 11 11 11-11%22 stroke-width=%228%22/%3E%3C/g%3E%3C/svg%3E">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: one mobile-first column; search on top, product shelf, then a ranked receipt-like comparison per product. */
 :root {
-  --bg: #f3f5f8;
-  --surface: #ffffff;
-  --ink: #142033;
-  --muted: #5b6577;
-  --line: #dde2ea;
-  --accent: #f2b705;        /* étiquette prix */
-  --accent-ink: #3a2c00;
-  --best: #0f7a4f;
-  --best-bg: #e3f4ec;
-  --warn: #9a4b00;
-  --warn-bg: #fff1dc;
-  --chip: #e9edf3;
-  --font-display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  /* Charte PayezMoinsCher : noir + vert néon, touche rose (logo « Cher » barré d'une vague) */
+  --bg: #0e0d0f;
+  --surface: #18171b;
+  --ink: #f4f4f4;
+  --muted: #9d9ca4;
+  --line: #2c2b31;
+  --accent: #c6ff3d;        /* vert néon */
+  --accent-2: #5be37a;
+  --accent-ink: #0e0d0f;
+  --pink: #ff4fa3;
+  --best: #c6ff3d;
+  --best-bg: #1f2a10;
+  --warn: #ffb866;
+  --warn-bg: #33230f;
+  --chip: #222127;
+  --font-display: "Poppins", "Arial Black", system-ui, sans-serif;
   --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0e1520; --surface: #172131; --ink: #e8edf5; --muted: #9aa6b8; --line: #2a3648;
-    --accent: #f5c431; --accent-ink: #2a2000; --best: #5fd3a0; --best-bg: #123527;
-    --warn: #ffb866; --warn-bg: #3a2610; --chip: #223047; color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0e1520; --surface: #172131; --ink: #e8edf5; --muted: #9aa6b8; --line: #2a3648;
-  --accent: #f5c431; --accent-ink: #2a2000; --best: #5fd3a0; --best-bg: #123527;
-  --warn: #ffb866; --warn-bg: #3a2610; --chip: #223047; color-scheme: dark;
+  color-scheme: dark;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -52,10 +45,12 @@ body { margin: 0;
 header { display: flex; flex-direction: column; gap: 6px; }
 .brand { display: flex; align-items: center; gap: 10px; }
 .tag {
-  width: 34px; height: 34px; background: var(--accent); color: var(--accent-ink);
-  border-radius: 6px 6px 6px 18px; display: grid; place-items: center;
-  font-family: var(--font-display); font-weight: 800; font-size: 18px;
+  width: 40px; height: 40px; border-radius: 12px; flex: none;
+  background: linear-gradient(145deg, var(--accent), var(--accent-2));
+  display: grid; place-items: center; box-shadow: 0 0 22px -6px rgba(198,255,61,.55);
 }
+.cher { color: var(--accent); position: relative; display: inline-block; }
+.cher svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 h1 { font-family: var(--font-display); font-weight: 800; font-size: 28px; margin: 0; letter-spacing: -0.01em; }
 .sub { color: var(--muted); margin: 0; max-width: 60ch; text-wrap: balance; }
 .demo { font-size: 12.5px; color: var(--warn); background: var(--warn-bg); border-radius: 8px; padding: 8px 10px; }
@@ -140,7 +135,7 @@ footer { font-size: 12.5px; color: var(--muted); }
 
 <div class="wrap">
   <header>
-    <div class="brand"><div class="tag" aria-hidden="true">€</div><h1>PayezMoinsCher</h1></div>
+    <div class="brand"><div class="tag" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 100 100" fill="none" stroke="#0e0d0f" stroke-linecap="round" stroke-linejoin="round"><path d="M64 30a24 24 0 1 0 0 40" stroke-width="10"/><path d="M24 44h32M24 56h28" stroke-width="8"/><path d="M80 30v32m-11-11 11 11 11-11" stroke-width="8"/></svg></div><h1>PayezMoins<span class="cher">Cher<svg viewBox="0 0 100 50" preserveAspectRatio="none" aria-hidden="true"><path d="M0 28 q5 -7 10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0" fill="none" stroke="#ff4fa3" stroke-width="4" stroke-linecap="round"/></svg></span></h1></div>
     <p class="sub">Le même produit sur 8 sites fiables, classé par ce qu'il vous coûte vraiment une fois vos cartes de fidélité comptées.</p>
     <div class="demo">Maquette : les produits et les prix sont des exemples. Les avantages des cartes viennent des sites officiels des enseignes.</div>
   </header>
