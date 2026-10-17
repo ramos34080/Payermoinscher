@@ -183,6 +183,12 @@ footer .links a:hover, footer .links a:focus-visible { color: var(--accent); tex
 .steps li { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
 .steps h3 { font-family: var(--font-display); font-size: 18px; margin: 12px 0 6px; }
 .steps p { margin: 0; color: var(--muted); }
+.guidelist h3 { margin-top: 0; }
+.guidelist a { color: var(--ink); text-decoration: none; }
+.guidelist a::after { content: " →"; color: var(--accent); }
+.guidelist a:hover, .guidelist a:focus-visible { color: var(--accent); }
+.guidelist li { position: relative; }
+.guidelist a::before { content: ""; position: absolute; inset: 0; }
 .num { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--accent); color: var(--accent-ink); font-family: var(--font-display); font-weight: 800; }
 .shops { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
 .shops li { font-family: var(--font-display); font-weight: 700; font-size: 16px; padding: 10px 16px; border-radius: 12px; background: var(--chip); border: 1px solid var(--line); }
@@ -334,6 +340,15 @@ section[id], #detail { scroll-margin-top: 76px; }
       </ul>
     </section>
 
+    <section id="guides" class="block">
+      <h2 class="title">Guides d'achat</h2>
+      <ul class="steps guidelist">
+        <li><h3><a href="guide-lave-linge.html">Quel lave-linge choisir ?</a></h3><p>Capacité, essorage, énergie, bruit : les 6 critères qui comptent.</p></li>
+        <li><h3><a href="guide-aspirateur-sans-fil.html">Quel aspirateur sans fil ?</a></h3><p>Autonomie réelle, batterie, brosses : les pièges des fiches produit.</p></li>
+        <li><h3><a href="guide-ps5-meilleur-prix.html">PS5 au meilleur prix réel</a></h3><p>Standard ou numérique, PS5 Pro, offres groupées.</p></li>
+      </ul>
+    </section>
+
     <section id="faq" class="block">
       <h2 class="title">Questions fréquentes</h2>
       <div class="faq">
@@ -350,7 +365,7 @@ section[id], #detail { scroll-margin-top: 76px; }
   <footer>
     <p>Coût réel = prix + livraison − avantages de vos cartes. Les cartes payantes ont aussi une cotisation annuelle, indiquée sur chaque carte. Les avantages des cartes et les garanties viennent des sites officiels des enseignes.</p>
     <p>PayezMoinsCher est gratuit pour vous. Quand vous achetez chez une enseigne via nos liens, celle-ci peut nous verser une commission, sans aucun surcoût pour vous. Cela ne change jamais le classement des offres. En tant que Partenaire Amazon, nous réalisons un bénéfice sur les achats remplissant les conditions requises.</p>
-    <nav class="links" aria-label="Informations"><a href="a-propos.html">Qui sommes-nous</a><a href="contact.html">Contact</a><a href="mentions-legales.html">Mentions légales</a><a href="confidentialite.html">Confidentialité</a></nav>
+    <nav class="links" aria-label="Informations"><a href="guides.html">Guides d'achat</a><a href="a-propos.html">Qui sommes-nous</a><a href="contact.html">Contact</a><a href="mentions-legales.html">Mentions légales</a><a href="confidentialite.html">Confidentialité</a></nav>
   </footer>
 </div>
 
@@ -662,7 +677,14 @@ fetch("data/offers.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : nul
   FEED_DATE = data.updated ? new Date(data.updated).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) : null;
   document.querySelector(".soon").textContent = `Prix des enseignes partenaires mis à jour ${FEED_DATE ? "le " + FEED_DATE : "chaque jour"}. Vérifiez toujours le prix final sur le site du vendeur.`;
   renderShelf();
-}).catch(() => {});
+}).catch(() => {}).finally(openFromHash);
+
+// Lien direct vers une fiche : payezmoinscher.com/#produit-ll (utilisé par les guides d'achat)
+function openFromHash() {
+  const m = location.hash.match(/^#produit-(.+)$/);
+  const p = m && catalog().find(x => x.id === m[1]);
+  if (p) { current = p; renderDetail(p); }
+}
 </script>
 </body>
 </html>
