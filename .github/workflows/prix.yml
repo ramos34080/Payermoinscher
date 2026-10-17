@@ -1,0 +1,29 @@
+# Met à jour les prix chaque matin à partir des flux Awin des enseignes qui nous ont acceptés.
+name: Mise à jour des prix
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  prix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Construire data/offers.json
+        env:
+          AWIN_FEED_KEY: ${{ secrets.AWIN_FEED_KEY }}
+        run: python3 scripts/build_offers.py
+      - name: Enregistrer les nouveaux prix
+        run: |
+          if git diff --quiet data/offers.json; then echo "Pas de changement"; exit 0; fi
+          git config user.name "PayezMoinsCher prix"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/offers.json
+          git commit -m "Prix mis à jour"
+          git push

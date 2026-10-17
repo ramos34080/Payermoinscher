@@ -238,7 +238,9 @@ section[id], #detail { scroll-margin-top: 76px; }
 .product { padding: 0; overflow: hidden; gap: 0; }
 .pvis { position: relative; display: grid; place-items: center; height: 140px; background: radial-gradient(circle at 50% 60%, #26301a, #1b1a1f 70%); color: var(--accent); }
 .pvis.big { height: auto; min-height: 220px; border-radius: 16px; border: 1px solid var(--line); }
-.pbadge { position: absolute; top: 10px; left: 10px; font-size: 12px; font-weight: 800; color: var(--accent-ink); background: var(--accent); border-radius: 999px; padding: 3px 9px; }
+.pvis img { width: 100%; height: 100%; object-fit: contain; background: #fff; padding: 10px; }
+.pvis.big img { border-radius: 16px; min-height: 220px; }
+.pbadge { z-index: 1; position: absolute; top: 10px; left: 10px; font-size: 12px; font-weight: 800; color: var(--accent-ink); background: var(--accent); border-radius: 999px; padding: 3px 9px; }
 .pbody { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px 14px; }
 .phero { display: grid; gap: 16px; }
 @media (min-width: 640px) { .phero { grid-template-columns: 220px 1fr; align-items: start; } }
@@ -422,7 +424,18 @@ const SEARCH = {
   Amazon: q => "https://www.amazon.fr/s?k=" + encodeURIComponent(q),
   "Electro Dépôt": q => "https://www.electrodepot.fr/catalogsearch/result/?q=" + encodeURIComponent(q),
 };
-const linkFor = (site, p) => SEARCH[site] ? SEARCH[site](p.ref) : LINKS[site];
+const linkFor = (site, p) => (p.urls && p.urls[site]) || (SEARCH[site] ? SEARCH[site](p.ref) : LINKS[site]);
+const eur = n => n.toLocaleString("fr-FR", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }) + " €";
+const esc = t => String(t || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+// Vrais prix : data/offers.json est rempli chaque jour par scripts/build_offers.py à partir des flux des enseignes.
+let FEED = [], FEED_DATE = null;
+function fromFeed(x) {
+  return { id: "e" + x.ean, ean: x.ean, brand: esc(x.brand), cat: x.cat, catLabel: esc(x.catLabel), name: esc(x.name),
+    specs: x.model ? "Réf. " + esc(x.model) : "", energy: null, ref: x.model || x.name, image: x.image, priced: true,
+    sites: x.offers.map(o => o.site), offers: x.offers, urls: Object.fromEntries(x.offers.map(o => [o.site, o.url])) };
+}
+const catalog = () => [...FEED, ...PRODUCTS.filter(p => !FEED.some(f => f.ref && f.ref.toLowerCase() === p.ref.toLowerCase()))];
 
 let owned = new Set(["confo"]);
 try { const s = JSON.parse(localStorage.getItem("oa-cards") || "null"); if (Array.isArray(s)) owned = new Set(s); } catch (e) {}
@@ -447,7 +460,15 @@ function perksFor(site, product, cardSet) {
 // Classement sans prix : d'abord le pourcentage rendu par vos cartes, puis la livraison offerte.
 const score = x => x.rate * 100 + (x.freeShip ? 0.5 : 0);
 function cardsOf(site) { return Object.entries(CARDS).filter(([, c]) => c.site === site || (c.also && c.also.site === site)); }
-function ranked(p, cardSet) { return p.sites.map(site => ({ site, ...perksFor(site, p, cardSet) })).sort((a, b) => score(b) - score(a)); }
+function ranked(p, cardSet) {
+  if (p.priced) return p.offers.map(o => {
+    const k = perksFor(o.site, p, cardSet);
+    const ship = k.freeShip ? 0 : (o.ship || 0);
+    const disc = k.discounts.map(d => ({ label: d.label, amount: Math.round(o.price * d.rate * 100) / 100 }));
+    return { site: o.site, ...k, price: o.price, shipKnown: o.ship !== null && o.ship !== undefined, ship, disc, real: o.price + ship - disc.reduce((a, d) => a + d.amount, 0) };
+  }).sort((a, b) => a.real - b.real);
+  return p.sites.map(site => ({ site, ...perksFor(site, p, cardSet) })).sort((a, b) => score(b) - score(a));
+}
 
 function renderCards() {
   const el = document.getElementById("cards");
@@ -465,6 +486,7 @@ function renderCards() {
 function energyTag(e) { return e ? `<span class="energy" style="background:${ENERGY[e]};${"DE".includes(e) ? "color:#1a1a1a" : ""}">${e}</span>` : ""; }
 function topLine(p) {
   const t = ranked(p, owned)[0];
+  if (p.priced) return `Coût réel dès <b>${eur(t.real)}</b> chez ${t.site}`;
   if (t.rate) return `Jusqu'à <b>${pct(t.rate)}</b> rendus chez ${t.site}`;
   if (t.freeShip) return `Livraison offerte chez ${t.site}`;
   return `${p.sites.length} enseignes à comparer`;
@@ -483,6 +505,7 @@ const ICONS = {
 const icon = (p, size) => `<svg width="${size}" height="${size}" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[p.catLabel] || ""}</svg>`;
 function perkBadge(p) {
   const t = ranked(p, owned)[0];
+  if (p.priced) return p.offers.length > 1 ? `<span class="pbadge">${p.offers.length} enseignes</span>` : "";
   if (t.rate) return `<span class="pbadge">−${pct(t.rate)}</span>`;
   if (t.freeShip) return `<span class="pbadge">Livraison offerte</span>`;
   return "";
@@ -490,7 +513,7 @@ function perkBadge(p) {
 function card(p) {
   const btn = document.createElement("button");
   btn.className = "product"; btn.type = "button"; btn.id = "prod-" + p.id;
-  btn.innerHTML = `<span class="pvis">${perkBadge(p)}${icon(p, 64)}</span><span class="pbody"><span class="cat">${p.brand} · ${p.catLabel} ${energyTag(p.energy)}</span><span class="name">${p.name}</span><span class="specs">${p.specs}</span><span class="from">${topLine(p)}</span></span>`;
+  btn.innerHTML = `<span class="pvis">${perkBadge(p)}${p.image ? `<img src="${esc(p.image)}" alt="" loading="lazy">` : icon(p, 64)}</span><span class="pbody"><span class="cat">${p.brand} · ${p.catLabel} ${energyTag(p.energy)}</span><span class="name">${p.name}</span><span class="specs">${p.specs}</span><span class="from">${topLine(p)}</span></span>`;
   btn.onclick = () => { current = p; renderDetail(p); };
   return btn;
 }
@@ -503,7 +526,7 @@ function renderRows() {
   const el = document.getElementById("rows");
   el.innerHTML = "";
   for (const r of ROWS) {
-    const list = PRODUCTS.filter(p => r.cats.includes(p.cat));
+    const list = catalog().filter(p => r.cats.includes(p.cat)).slice(0, 24);
     if (!list.length) continue;
     const row = document.createElement("div");
     row.className = "row";
@@ -522,7 +545,8 @@ function renderShelf() {
   const title = document.getElementById("shelfTitle");
   document.getElementById("rows").hidden = !!q; el.hidden = !q; title.hidden = !q;
   if (!q) { renderRows(); renderEverywhere(""); return; }
-  const list = PRODUCTS.filter(p => (p.name + " " + p.brand + " " + p.catLabel + " " + p.specs).toLowerCase().includes(q));
+  const words = q.split(/\s+/);
+  const list = catalog().filter(p => { const t = (p.name + " " + p.brand + " " + p.catLabel + " " + p.specs + " " + (p.ref || "")).toLowerCase(); return words.every(w => t.includes(w)); }).slice(0, 60);
   title.textContent = list.length ? `Nos fiches : ${list.length} résultat${list.length > 1 ? "s" : ""}` : "Nos fiches";
   el.innerHTML = list.length ? "" : `<p class="empty">Ce produit n'a pas encore sa fiche chez nous. Cherchez-le directement chez chaque enseigne ci-dessous.</p>`;
   list.forEach(p => el.appendChild(card(p)));
@@ -552,21 +576,24 @@ function renderDetail(p) {
   const d = document.getElementById("detail"); d.hidden = false;
   const rows = ranked(p, owned);
   const top = rows[0];
-  const summary = top.rate || top.freeShip
+  const cheapest = p.priced ? [...rows].sort((a, b) => a.price - b.price)[0] : null;
+  const summary = p.priced
+    ? `Le meilleur coût réel pour vous est chez <b>${top.site}</b> : ${eur(top.real)}.` + (cheapest.site !== top.site ? ` Le prix affiché le plus bas est chez ${cheapest.site} (${eur(cheapest.price)}), mais il vous revient à ${eur(cheapest.real)}.` : "")
+    : top.rate || top.freeShip
     ? `Avec vos cartes, c'est chez <b>${top.site}</b> que vous récupérez le plus${top.rate ? ` : <b>${pct(top.rate)}</b> du prix` : ""}${top.freeShip ? (top.rate ? ", et la livraison est offerte" : " : la livraison est offerte") : ""}. Vérifiez le prix sur chaque site avant d'acheter.`
     : `Aucune de vos cartes ne donne d'avantage sur ce produit. Cochez vos cartes pour voir où vous gagnez le plus.`;
 
   d.innerHTML = `
     <button class="back" type="button" id="back">← Tous les produits</button>
     <div class="phero">
-      <div class="pvis big">${icon(p, 120)}</div>
+      <div class="pvis big">${p.image ? `<img src="${esc(p.image)}" alt="${p.name}">` : icon(p, 120)}</div>
       <div class="pinfo">
         <div class="ptitle"><span class="label">${p.brand} · ${p.catLabel}</span><h2>${p.name}</h2></div>
         <dl class="facts">
           <div><dt>Marque</dt><dd>${p.brand}</dd></div>
-          <div><dt>Référence</dt><dd>${p.ref}</dd></div>
-          <div><dt>Caractéristiques</dt><dd>${p.specs}</dd></div>
-          <div><dt>Classe énergie</dt><dd>${p.energy ? energyTag(p.energy) : "—"}</dd></div>
+          <div><dt>Référence</dt><dd>${esc(p.ref)}</dd></div>
+          ${p.priced ? `<div><dt>Code EAN</dt><dd>${p.ean}</dd></div><div><dt>Prix vus le</dt><dd>${FEED_DATE || "—"}</dd></div>` : `<div><dt>Caractéristiques</dt><dd>${p.specs}</dd></div>
+          <div><dt>Classe énergie</dt><dd>${p.energy ? energyTag(p.energy) : "—"}</dd></div>`}
         </dl>
       </div>
     </div>
@@ -574,9 +601,16 @@ function renderDetail(p) {
     <div class="summary">${summary}</div>
     <p class="legal">Partout, un appareil neuf a <b>2 ans de garantie légale</b>, due par le vendeur : réparation, échange ou remboursement, et 12 mois de plus après une réparation. <a href="${LEGAL}" target="_blank" rel="noopener">Service-public.fr ↗</a></p>
     ${rows.map((r, i) => {
-      const lines = [`<div class="line"><span>Prix</span><span>à vérifier sur le site</span></div>`];
-      lines.push(`<div class="line"><span>Livraison</span><span>${r.freeShipBy ? "offerte avec " + r.freeShipBy : SITE_DELIVERY_FREE[r.site] ? "offerte" : "selon le site"}</span></div>`);
-      r.discounts.forEach(x => lines.push(`<div class="line minus"><span>${x.label}</span><span>− ${pct(x.rate)}</span></div>`));
+      const lines = [];
+      if (p.priced) {
+        lines.push(`<div class="line"><span>Prix affiché</span><span>${eur(r.price)}</span></div>`);
+        lines.push(`<div class="line"><span>Livraison${r.freeShipBy ? " (offerte avec " + r.freeShipBy + ")" : ""}</span><span>${r.ship ? "+ " + eur(r.ship) : r.freeShip || r.shipKnown ? "0 €" : "non indiquée"}</span></div>`);
+        r.disc.forEach(x => lines.push(`<div class="line minus"><span>${x.label}</span><span>− ${eur(x.amount)}</span></div>`));
+      } else {
+        lines.push(`<div class="line"><span>Prix</span><span>à vérifier sur le site</span></div>`);
+        lines.push(`<div class="line"><span>Livraison</span><span>${r.freeShipBy ? "offerte avec " + r.freeShipBy : SITE_DELIVERY_FREE[r.site] ? "offerte" : "selon le site"}</span></div>`);
+        r.discounts.forEach(x => lines.push(`<div class="line minus"><span>${x.label}</span><span>− ${pct(x.rate)}</span></div>`));
+      }
       const missing = cardsOf(r.site).filter(([k]) => !owned.has(k));
       let hint = "";
       if (missing.length) {
@@ -599,12 +633,12 @@ function renderDetail(p) {
         </div>
       </details>`;
       const credit = r.credit ? `<div class="credit">La carte de ce magasin est une carte de crédit renouvelable. Un crédit vous engage et doit être remboursé.</div>` : "";
-      const best = i === 0 && (r.rate || r.freeShip);
+      const best = i === 0 && (p.priced ? rows.length > 1 : (r.rate || r.freeShip));
       return `<article class="offer${best ? " best" : ""}">
-        <div class="site">${r.site}${best ? '<span class="badge">Le plus avantageux pour vous</span>' : ""}</div>
-        <div class="real"><div class="perk">${r.rate ? "−" + pct(r.rate) : r.freeShip ? "Livr. offerte" : "—"}</div><div class="k">avec vos cartes</div></div>
+        <div class="site">${r.site}${best ? `<span class="badge">${p.priced ? "Meilleur coût réel" : "Le plus avantageux pour vous"}</span>` : ""}</div>
+        <div class="real">${p.priced ? `<div class="v">${eur(r.real)}</div><div class="k">coût réel</div>` : `<div class="perk">${r.rate ? "−" + pct(r.rate) : r.freeShip ? "Livr. offerte" : "—"}</div><div class="k">avec vos cartes</div>`}</div>
         <div class="lines">${lines.join("")}</div>${hint}${credit}${warranty}
-        <a class="go" href="${linkFor(r.site, p)}" target="_blank" rel="noopener">Voir le prix sur ${r.site} ↗</a>
+        <a class="go" href="${linkFor(r.site, p)}" target="_blank" rel="noopener">${p.priced ? "Voir l'offre chez" : "Voir le prix sur"} ${r.site} ↗</a>
       </article>`;
     }).join("")}`;
   document.getElementById("back").onclick = () => { current = null; d.hidden = true; document.getElementById("home").hidden = false; document.getElementById("comparer").scrollIntoView(); };
@@ -619,6 +653,14 @@ document.getElementById("qtop").addEventListener("input", e => {
 });
 document.getElementById("q").addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("comparer").scrollIntoView(); });
 renderCards(); renderShelf();
+fetch("data/offers.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(data => {
+  if (!data || !Array.isArray(data.products) || !data.products.length) return;
+  FEED = data.products.filter(x => Array.isArray(x.offers) && x.offers.length && x.offers.every(o => WARRANTY[o.site])).map(fromFeed);
+  if (!FEED.length) return;
+  FEED_DATE = data.updated ? new Date(data.updated).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) : null;
+  document.querySelector(".soon").textContent = `Prix des enseignes partenaires mis à jour ${FEED_DATE ? "le " + FEED_DATE : "chaque jour"}. Vérifiez toujours le prix final sur le site du vendeur.`;
+  renderShelf();
+}).catch(() => {});
 </script>
 </body>
 </html>

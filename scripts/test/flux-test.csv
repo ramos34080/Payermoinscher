@@ -1,0 +1,8 @@
+merchant_name,product_name,aw_deep_link,search_price,delivery_cost,ean,brand_name,model_number,merchant_category,merchant_image_url,in_stock
+Darty FR,Lave-linge TEST A 9 kg,https://example.com/darty/a,500.00,0,1234567890128,TestBrand,TA9,Lave-linge,,1
+Fnac FR,Lave-linge TEST A 9 kg,https://example.com/fnac/a,490.00,29.00,1234567890128,TestBrand,TA9,Electroménager > Lave-linge,,1
+Cdiscount FR,Lave linge TEST A,https://example.com/cdiscount/a,480.00,39.00,1234567890128,TestBrand,TA9,Gros électroménager > Lave linge,,1
+Fnac FR,TV TEST B 55 pouces,https://example.com/fnac/b,999.00,0,4006381333931,TestTV,TB55,Téléviseur,,1
+Darty FR,TV TEST B 55 pouces,https://example.com/darty/b,1009.00,0,4006381333931,TestTV,TB55,TV,,0
+Fnac Spectacles FR,Billet concert,https://example.com/x,50,0,4006381333948,,,Spectacle,,1
+Fnac FR,Livre sans catégorie,https://example.com/y,10,0,9780306406157,,,Livres,,1
