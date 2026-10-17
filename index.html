@@ -364,6 +364,8 @@ const CARDS = {
   dmax:    { site: "Darty",      name: "Darty Max",         fee: "dès 11,99 €/mois",        freeShip: true },
   prime:   { site: "Amazon",     name: "Amazon Prime",      fee: "69,90 €/an",              freeShip: true },
 };
+// Identifiant Amazon Partenaires (finit par -21), ajouté aux liens Amazon
+const AMAZON_TAG = "";
 const LINKS = { Conforama: "https://www.conforama.fr", Fnac: "https://www.fnac.com", Cdiscount: "https://www.cdiscount.com", But: "https://www.but.fr", Boulanger: "https://www.boulanger.com", Darty: "https://www.darty.com", Amazon: "https://www.amazon.fr", "Electro Dépôt": "https://www.electrodepot.fr" };
 const SITE_DELIVERY_FREE = { Boulanger: true }; // livraison offerte pour tous chez Boulanger
 
@@ -421,7 +423,7 @@ const SEARCH = {
   Fnac: q => "https://www.fnac.com/SearchResult/ResultList.aspx?Search=" + encodeURIComponent(q),
   Cdiscount: q => "https://www.cdiscount.com/search/10/" + encodeURIComponent(q.toLowerCase()) + ".html",
   Conforama: q => "https://www.conforama.fr/recherche-conforama/" + encodeURIComponent(q),
-  Amazon: q => "https://www.amazon.fr/s?k=" + encodeURIComponent(q),
+  Amazon: q => "https://www.amazon.fr/s?k=" + encodeURIComponent(q) + (AMAZON_TAG ? "&tag=" + AMAZON_TAG : ""),
   "Electro Dépôt": q => "https://www.electrodepot.fr/catalogsearch/result/?q=" + encodeURIComponent(q),
 };
 const linkFor = (site, p) => (p.urls && p.urls[site]) || (SEARCH[site] ? SEARCH[site](p.ref) : LINKS[site]);
