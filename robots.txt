@@ -1,4 +1,5 @@
 User-agent: *
+Disallow: /social/
 Allow: /
 
 Sitemap: https://payezmoinscher.com/sitemap.xml
